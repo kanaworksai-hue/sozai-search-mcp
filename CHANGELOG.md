@@ -3,7 +3,7 @@
 Release notes are written by hand for every tag. Data releases (`data-YYYY.MM.DD`) are listed
 with the code release that first expects them.
 
-## 0.1.0 (unreleased draft)
+## 0.1.0 (2026-11-08)
 
 First public release of Sozai Search MCP (package `sozai-search-mcp`, commands `sozai` and `sozai-search-mcp`,
 Python module `sozai`).
@@ -28,4 +28,7 @@ Python module `sozai`).
 - Safety: downloads only over https from the libraries' own hosts (redirects included), every path
   built from data is kept inside the destination folder, fetches never delete existing files,
   archive size limits, local previews read only from Sozai Search's own catalog, and the semantic worker
-  runs isolated from the user's project folder.
+  runs isolated from the user's project folder. A cross-process lock keeps two `sozai build` runs
+  (or a build next to a running session) from breaking each other's data.
+- Tested on macOS, Windows and Linux with Python 3.10 to 3.14 (CI on Ubuntu, macOS and Windows).
+- README in English, 日本語, 简体中文, 한국어, Português and Español.
