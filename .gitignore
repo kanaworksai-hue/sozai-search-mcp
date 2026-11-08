@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Local index and caches (built per user; see README)
+*.sqlite
+*.sqlite-*
+.sozai/
+.DS_Store
+
+# Local tool configs and published data (never committed)
+.claude/
+.mcp.json
+*.npz
+sozai-data-*.zip

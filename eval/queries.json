@@ -1,0 +1,685 @@
+[
+ {
+  "query": "wooden crate",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "crate"
+  ]
+ },
+ {
+  "query": "barrel",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "barrel"
+  ]
+ },
+ {
+  "query": "sofa",
+  "alternatives": [
+   "couch"
+  ],
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "sofa",
+   "couch"
+  ]
+ },
+ {
+  "query": "armchair",
+  "alternatives": [
+   "arm chair"
+  ],
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "arm_?chair"
+  ]
+ },
+ {
+  "query": "office chair",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "chair"
+  ]
+ },
+ {
+  "query": "street lamp",
+  "alternatives": [
+   "lamp post"
+  ],
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "lamp",
+   "light"
+  ]
+ },
+ {
+  "query": "potted plant",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "potted",
+   "plant"
+  ]
+ },
+ {
+  "query": "boulder",
+  "alternatives": [
+   "large rock"
+  ],
+  "filters": {
+   "kind": "model",
+   "min_size_m": 1
+  },
+  "expect": [
+   "boulder",
+   "rock"
+  ]
+ },
+ {
+  "query": "tree",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "tree"
+  ]
+ },
+ {
+  "query": "sword",
+  "alternatives": [
+   "blade",
+   "katana"
+  ],
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "sword",
+   "katana",
+   "estoc",
+   "sabre",
+   "blade"
+  ]
+ },
+ {
+  "query": "car",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "car"
+  ]
+ },
+ {
+  "query": "camera",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "camera"
+  ]
+ },
+ {
+  "query": "food",
+  "alternatives": [
+   "fruit"
+  ],
+  "filters": {
+   "kind": "model",
+   "max_size_m": 0.5
+  },
+  "expect": [
+   "food",
+   "apple",
+   "fruit",
+   "banana",
+   "bread",
+   "orange",
+   "lemon"
+  ]
+ },
+ {
+  "query": "red brick",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "brick"
+  ]
+ },
+ {
+  "query": "wood floor",
+  "alternatives": [
+   "wooden planks floor"
+  ],
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "wood",
+   "floor",
+   "plank"
+  ]
+ },
+ {
+  "query": "cobblestone",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "cobble",
+   "paving"
+  ]
+ },
+ {
+  "query": "rusty metal",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "rust",
+   "metal"
+  ]
+ },
+ {
+  "query": "forest floor",
+  "alternatives": [
+   "forest ground",
+   "leaves ground"
+  ],
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "forest",
+   "leaves",
+   "ground"
+  ]
+ },
+ {
+  "query": "sand",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "sand"
+  ]
+ },
+ {
+  "query": "grass",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "grass"
+  ]
+ },
+ {
+  "query": "marble",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "marble"
+  ]
+ },
+ {
+  "query": "fabric",
+  "alternatives": [
+   "cloth"
+  ],
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "fabric",
+   "cloth",
+   "denim",
+   "leather"
+  ]
+ },
+ {
+  "query": "concrete wall",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "concrete"
+  ]
+ },
+ {
+  "query": "asphalt road",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "asphalt",
+   "road"
+  ]
+ },
+ {
+  "query": "snow",
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "snow"
+  ]
+ },
+ {
+  "query": "sunset",
+  "filters": {
+   "kind": "hdri"
+  },
+  "expect": [
+   "sunset",
+   "evening"
+  ]
+ },
+ {
+  "query": "night city",
+  "alternatives": [
+   "urban night"
+  ],
+  "filters": {
+   "kind": "hdri"
+  },
+  "expect": [
+   "night",
+   "city",
+   "urban",
+   "street"
+  ]
+ },
+ {
+  "query": "studio",
+  "filters": {
+   "kind": "hdri"
+  },
+  "expect": [
+   "studio"
+  ]
+ },
+ {
+  "query": "overcast sky",
+  "alternatives": [
+   "cloudy sky"
+  ],
+  "filters": {
+   "kind": "hdri"
+  },
+  "expect": [
+   "overcast",
+   "cloud"
+  ]
+ },
+ {
+  "query": "forest",
+  "filters": {
+   "kind": "hdri"
+  },
+  "expect": [
+   "forest",
+   "wood",
+   "tree"
+  ]
+ },
+ {
+  "query": "indoor room",
+  "alternatives": [
+   "interior"
+  ],
+  "filters": {
+   "kind": "hdri"
+  },
+  "expect": [
+   "room",
+   "interior",
+   "hall",
+   "studio",
+   "house",
+   "indoor"
+  ]
+ },
+ {
+  "query": "road markings",
+  "alternatives": [
+   "road lines"
+  ],
+  "filters": {
+   "kind": "decal"
+  },
+  "expect": [
+   "road"
+  ]
+ },
+ {
+  "query": "tree",
+  "filters": {
+   "style": "lowpoly",
+   "min_height_m": 2
+  },
+  "expect": [
+   "tree"
+  ]
+ },
+ {
+  "query": "sofa",
+  "alternatives": [
+   "couch"
+  ],
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "sofa",
+   "couch"
+  ]
+ },
+ {
+  "query": "police car",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "police"
+  ]
+ },
+ {
+  "query": "castle tower",
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "tower"
+  ]
+ },
+ {
+  "query": "character",
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "character"
+  ]
+ },
+ {
+  "query": "pizza",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "pizza"
+  ]
+ },
+ {
+  "query": "chair",
+  "filters": {
+   "style": "lowpoly",
+   "max_height_m": 1.2
+  },
+  "expect": [
+   "chair"
+  ]
+ },
+ {
+  "query": "rover",
+  "alternatives": [
+   "moon buggy"
+  ],
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "rover"
+  ]
+ },
+ {
+  "query": "pirate ship",
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "ship"
+  ]
+ },
+ {
+  "query": "gravestone",
+  "alternatives": [
+   "tombstone"
+  ],
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "grave",
+   "tomb"
+  ]
+ },
+ {
+  "query": "zombie",
+  "filters": {
+   "rigged": true
+  },
+  "expect": [
+   "zombie"
+  ]
+ },
+ {
+  "query": "knight",
+  "alternatives": [
+   "warrior"
+  ],
+  "filters": {
+   "rigged": true
+  },
+  "expect": [
+   "knight",
+   "warrior"
+  ]
+ },
+ {
+  "query": "horse",
+  "filters": {
+   "kind": "model",
+   "style": "lowpoly"
+  },
+  "expect": [
+   "horse"
+  ]
+ },
+ {
+  "query": "woman",
+  "alternatives": [
+   "female"
+  ],
+  "filters": {
+   "animated": true
+  },
+  "expect": [
+   "woman",
+   "female"
+  ]
+ },
+ {
+  "query": "astronaut",
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "astronaut"
+  ]
+ },
+ {
+  "query": "dinosaur",
+  "alternatives": [
+   "t rex",
+   "trex"
+  ],
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "saurus",
+   "rex",
+   "dino",
+   "raptor",
+   "triceratops",
+   "stegosaurus"
+  ]
+ },
+ {
+  "query": "burger",
+  "alternatives": [
+   "hamburger"
+  ],
+  "filters": {
+   "style": "lowpoly"
+  },
+  "expect": [
+   "burger"
+  ]
+ },
+ {
+  "query": "bed",
+  "filters": {
+   "style": "lowpoly",
+   "min_size_m": 1.5
+  },
+  "expect": [
+   "bed"
+  ]
+ },
+ {
+  "query": "mossy rock",
+  "filters": {
+   "source": "megascans",
+   "kind": "model"
+  },
+  "expect": [
+   "moss"
+  ]
+ },
+ {
+  "query": "forest floor",
+  "filters": {
+   "source": "megascans",
+   "kind": "material"
+  },
+  "expect": [
+   "forest"
+  ]
+ },
+ {
+  "query": "graffiti",
+  "filters": {
+   "kind": "decal"
+  },
+  "expect": [
+   "graffiti"
+  ]
+ },
+ {
+  "query": "blood",
+  "filters": {
+   "kind": "decal"
+  },
+  "expect": [
+   "blood"
+  ]
+ },
+ {
+  "query": "tree trunk",
+  "filters": {
+   "source": "megascans"
+  },
+  "expect": [
+   "trunk",
+   "log"
+  ]
+ },
+ {
+  "query": "cliff",
+  "filters": {
+   "kind": "model",
+   "min_size_m": 5
+  },
+  "expect": [
+   "cliff"
+  ]
+ },
+ {
+  "query": "rusty metal",
+  "filters": {
+   "source": "megascans",
+   "kind": "material"
+  },
+  "expect": [
+   "rust"
+  ]
+ },
+ {
+  "query": "fern",
+  "filters": {
+   "source": "megascans",
+   "kind": "model"
+  },
+  "expect": [
+   "fern"
+  ]
+ },
+ {
+  "query": "traffic cone",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "cone"
+  ]
+ },
+ {
+  "query": "cobblestone",
+  "filters": {
+   "kind": "material",
+   "source": "megascans"
+  },
+  "expect": [
+   "cobble"
+  ]
+ },
+ {
+  "query": "sand dune",
+  "alternatives": [
+   "desert sand"
+  ],
+  "filters": {
+   "kind": "material"
+  },
+  "expect": [
+   "sand"
+  ]
+ },
+ {
+  "query": "japanese",
+  "filters": {
+   "source": "megascans",
+   "kind": "model"
+  },
+  "expect": [
+   "japan"
+  ]
+ }
+]

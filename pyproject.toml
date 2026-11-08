@@ -1,0 +1,71 @@
+[project]
+name = "sozai-search-mcp"
+dynamic = ["version"]
+description = "Free 3D assets for AI agents: search free (mostly CC0) models, materials and HDRIs with real-world sizes, plus Megascans links, as an MCP server"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "東京AI映像合同会社" }]
+requires-python = ">=3.10"
+keywords = ["mcp", "model-context-protocol", "3d-assets", "cc0", "pbr", "hdri", "game-assets", "ai-agents",
+            "polyhaven", "ambientcg", "kenney", "quaternius", "megascans"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Multimedia :: Graphics :: 3D Modeling",
+]
+# No runtime dependencies: the MCP server is standard-library Python (see src/sozai/protocol.py).
+dependencies = []
+
+[project.scripts]
+sozai = "sozai.server:main"
+sozai-search-mcp = "sozai.server:main"
+
+[project.urls]
+Homepage = "https://github.com/kanaworksai-hue/sozai-search-mcp"
+Repository = "https://github.com/kanaworksai-hue/sozai-search-mcp"
+Issues = "https://github.com/kanaworksai-hue/sozai-search-mcp/issues"
+Changelog = "https://github.com/kanaworksai-hue/sozai-search-mcp/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+semantic = [
+    "numpy>=2.2.6",
+    "onnxruntime>=1.23.2",
+    "tokenizers>=0.23.3",
+]
+embed = [
+    "mlx>=0.32.4",
+    "mlx-vlm>=0.7.12",
+    "pillow>=12.3.0",
+]
+
+[dependency-groups]
+# The official MCP SDK is only used by the tests, to check the server against a real client.
+dev = ["pytest>=8", "anyio>=4", "mcp>=2.3,<3"]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/sozai/__init__.py"  # the one place the version is written
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sozai"]
+
+[tool.hatch.build.targets.sdist]
+# An allow-list, so local files (MCP configs, notes, data) can never end up in a release.
+include = ["/src", "/tests", "/eval", "/README.md", "/CHANGELOG.md", "/LICENSE", "/pyproject.toml", "/uv.lock"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

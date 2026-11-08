@@ -1,0 +1,22 @@
+[
+ {"query": "something to sit on in a medieval tavern", "filters": {"kind": "model"}, "expect": ["chair", "stool", "bench"]},
+ {"query": "spooky graveyard prop", "filters": {"kind": "model"}, "expect": ["grave", "tomb", "coffin", "cross"]},
+ {"query": "sci-fi corridor floor panel", "filters": {"kind": "material"}, "expect": ["sci", "metal", "panel", "plate", "tread", "floor"]},
+ {"query": "a place to sleep", "filters": {"kind": "model"}, "expect": ["bed", "mattress", "sleeping", "cot", "hammock"]},
+ {"query": "light source for a dark dungeon", "filters": {"kind": "model"}, "expect": ["torch", "lantern", "candle", "lamp", "brazier"]},
+ {"query": "container for liquids in a pub", "filters": {"kind": "model"}, "expect": ["barrel", "mug", "bottle", "keg", "jug", "cup", "tankard"]},
+ {"query": "evening sky with warm light", "filters": {"kind": "hdri"}, "expect": ["sunset", "evening", "dusk", "golden"]},
+ {"query": "ground cover for a pine forest", "filters": {"kind": "material"}, "expect": ["forest", "needle", "pine", "leaves", "ground"]},
+ {"query": "weapon for a fantasy hero", "filters": {"kind": "model"}, "expect": ["sword", "axe", "bow", "staff", "hammer", "dagger", "spear"]},
+ {"query": "vehicle for a city street", "filters": {"kind": "model"}, "expect": ["car", "van", "truck", "taxi", "bus", "sedan", "vehicle"]},
+ {"query": "苔むした岩", "filters": {"kind": "model"}, "expect": ["moss"]},
+ {"query": "木头椅子", "filters": {"kind": "model"}, "expect": ["chair"]},
+ {"query": "生锈的金属", "filters": {"kind": "material"}, "expect": ["rust"]},
+ {"query": "夕焼けの空", "filters": {"kind": "hdri"}, "expect": ["sunset", "evening", "dusk"]},
+ {"query": "低多边形的树", "filters": {"style": "lowpoly"}, "expect": ["tree", "pine", "birch", "oak"]},
+ {"query": "红砖墙", "filters": {"kind": "material"}, "expect": ["brick"]},
+ {"query": "animated zombie enemy", "filters": {"animated": true}, "expect": ["zombie"]},
+ {"query": "cute animal character", "filters": {"style": "lowpoly"}, "expect": ["cat", "dog", "fox", "bunny", "rabbit", "pig", "cow", "chick", "animal", "bear", "deer", "sheep", "penguin", "frog", "duck", "horse"]},
+ {"query": "crumbling castle wall", "filters": {"kind": "model"}, "expect": ["castle", "wall", "ruin", "rampart"]},
+ {"query": "wet cobblestone street", "filters": {"kind": "material"}, "expect": ["cobble", "paving", "stone"]}
+]
