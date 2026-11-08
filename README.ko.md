@@ -54,6 +54,41 @@ Sozai Search는 인덱스입니다. 에셋 파일은 하나도 호스팅하지 �
 
 ## 🚀 시작하기
 
+### 🤖 AI 에이전트에게 설치 맡기기
+
+이 저장소의 URL을 Claude Code, Codex 같은 에이전트에게 주고 "Sozai Search MCP를 설치해 줘"라고 요청하세요. 에이전트는 아래 순서로 진행합니다(직접 설치할 때도 같습니다).
+
+1. **uv:** `uv --version`으로 확인하고, 없으면 설치합니다.
+   - macOS / Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+   - Windows: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+2. **서버 등록:** 사용자 본인의 프로젝트 폴더에서 실행합니다. clone은 필요 없고, uv가 GitHub에서 Sozai Search를 가져옵니다.
+
+   ```bash
+   # Claude Code: 이 프로젝트에만 등록(.mcp.json에 기록)
+   claude mcp add sozai -s project -- uvx --from git+https://github.com/kanaworksai-hue/sozai-search-mcp sozai
+
+   # Codex: 모든 프로젝트에 등록(~/.codex/config.toml에 기록)
+   codex mcp add sozai -- uvx --from git+https://github.com/kanaworksai-hue/sozai-search-mcp sozai
+   ```
+
+   다른 클라이언트(Claude Desktop, Cursor 등)는 같은 명령을 JSON 설정에 적습니다.
+
+   ```json
+   {"mcpServers": {"sozai": {"command": "uvx", "args": ["--from", "git+https://github.com/kanaworksai-hue/sozai-search-mcp", "sozai"]}}}
+   ```
+
+3. **새 세션 시작:** MCP 서버는 세션이 시작될 때 불러옵니다. Claude Code는 처음에 프로젝트의 `.mcp.json`을 승인해 달라고 묻습니다. `claude mcp list` 또는 `codex mcp list`로 확인할 수 있습니다.
+4. **써 보기:** "wooden crate"로 검색합니다. 첫 검색에서 공개 데이터(약 13 MB)를 내려받고 몇 초 만에 인덱스를 만듭니다. `fetch_asset`에는 프로젝트 안의 폴더를 절대 경로로 지정합니다.
+5. **의미로 검색(선택):** 설명형 질의나 모든 언어의 질의를 쓰려면 질의용 모델(약 350 MB)을 한 번 내려받습니다.
+
+   ```bash
+   uvx --from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp" sozai semantic-setup
+   ```
+
+   그다음 `--from git+https://github.com/kanaworksai-hue/sozai-search-mcp` 대신 `--from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp"`으로 등록합니다.
+
+### 🛠️ clone해서 쓰기
+
 [uv](https://docs.astral.sh/uv/)가 필요합니다(Python 3.10 이상도 함께 준비해 줍니다).
 
 ```bash

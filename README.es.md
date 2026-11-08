@@ -54,6 +54,41 @@ Sozai Search es un índice. No aloja ningún archivo de assets: cada resultado a
 
 ## 🚀 Primeros pasos
 
+### 🤖 Instálalo con tu agente de IA
+
+Pásale la URL de este repositorio a Claude Code, Codex u otro agente y pídele que instale Sozai Search MCP. Estos son los pasos que debe seguir (también sirven a mano):
+
+1. **uv:** comprueba `uv --version`; si no tienes uv, instálalo:
+   - macOS / Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+   - Windows: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+2. **Registra el servidor:** ejecútalo en la carpeta del propio proyecto del usuario. No hace falta clonar: uv descarga Sozai Search desde GitHub.
+
+   ```bash
+   # Claude Code: solo en este proyecto (escribe .mcp.json)
+   claude mcp add sozai -s project -- uvx --from git+https://github.com/kanaworksai-hue/sozai-search-mcp sozai
+
+   # Codex: todos los proyectos (escribe ~/.codex/config.toml)
+   codex mcp add sozai -- uvx --from git+https://github.com/kanaworksai-hue/sozai-search-mcp sozai
+   ```
+
+   Otros clientes (Claude Desktop, Cursor, ...) usan el mismo comando en su configuración JSON:
+
+   ```json
+   {"mcpServers": {"sozai": {"command": "uvx", "args": ["--from", "git+https://github.com/kanaworksai-hue/sozai-search-mcp", "sozai"]}}}
+   ```
+
+3. **Abre una sesión nueva:** Los servidores MCP se cargan al empezar la sesión. La primera vez, Claude Code pide aprobar el `.mcp.json` del proyecto. Compruébalo con `claude mcp list` o `codex mcp list`.
+4. **Pruébalo:** busca "wooden crate". La primera búsqueda descarga los datos publicados (unos 13 MB) y crea el índice en unos segundos. Pasa a `fetch_asset` una carpeta del proyecto con ruta absoluta.
+5. **Búsqueda por significado (opcional):** para consultas descriptivas en cualquier idioma, descarga una vez el modelo de consultas (unos 350 MB):
+
+   ```bash
+   uvx --from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp" sozai semantic-setup
+   ```
+
+   Después regístralo con `--from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp"` en lugar de `--from git+https://github.com/kanaworksai-hue/sozai-search-mcp`.
+
+### 🛠️ Desde un clon
+
 Necesitas [uv](https://docs.astral.sh/uv/) (incluye Python 3.10 o posterior).
 
 ```bash

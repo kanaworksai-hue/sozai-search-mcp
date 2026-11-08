@@ -54,6 +54,41 @@ Sozai Search はインデックスです。素材ファイルは一切ホスト�
 
 ## 🚀 クイックスタート
 
+### 🤖 AI エージェントにインストールしてもらう
+
+このリポジトリの URL を Claude Code や Codex などのエージェントに渡して、「Sozai Search MCP をインストールして」と頼んでください。エージェントは次の手順で進めます（手作業でも同じです）。
+
+1. **uv：** `uv --version` で確認し、なければインストールします。
+   - macOS / Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+   - Windows: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+2. **サーバーを登録：** ユーザー自身のプロジェクトのフォルダで実行します。clone は不要で、uv が GitHub から Sozai Search を取得します。
+
+   ```bash
+   # Claude Code：このプロジェクトだけに登録（.mcp.json に書き込みます）
+   claude mcp add sozai -s project -- uvx --from git+https://github.com/kanaworksai-hue/sozai-search-mcp sozai
+
+   # Codex：すべてのプロジェクトに登録（~/.codex/config.toml に書き込みます）
+   codex mcp add sozai -- uvx --from git+https://github.com/kanaworksai-hue/sozai-search-mcp sozai
+   ```
+
+   その他のクライアント（Claude Desktop、Cursor など）は、同じコマンドを JSON の設定に書きます。
+
+   ```json
+   {"mcpServers": {"sozai": {"command": "uvx", "args": ["--from", "git+https://github.com/kanaworksai-hue/sozai-search-mcp", "sozai"]}}}
+   ```
+
+3. **新しいセッションを開始：** MCP サーバーはセッションの開始時に読み込まれます。Claude Code は初回にプロジェクトの `.mcp.json` の承認を求めます。`claude mcp list` または `codex mcp list` で確認できます。
+4. **試す：** 「wooden crate」で検索します。最初の検索で公開データ（約 13 MB）をダウンロードし、数秒でインデックスを作ります。`fetch_asset` にはプロジェクト内のフォルダを絶対パスで指定します。
+5. **意味で検索（オプション）：** 説明文やどの言語のクエリにも対応させるには、クエリ用モデル（約 350 MB）を一度だけダウンロードします。
+
+   ```bash
+   uvx --from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp" sozai semantic-setup
+   ```
+
+   そのうえで、`--from git+https://github.com/kanaworksai-hue/sozai-search-mcp` の代わりに `--from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp"` で登録します。
+
+### 🛠️ clone して使う
+
 [uv](https://docs.astral.sh/uv/) が必要です（Python 3.10 以降は uv が用意してくれます）。
 
 ```bash
