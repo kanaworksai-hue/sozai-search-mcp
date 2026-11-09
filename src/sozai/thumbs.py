@@ -73,7 +73,7 @@ for src, dst in jobs:
     try:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         ext = src.lower().rsplit(".", 1)[-1]
-        if ext in ("glb", "gltf"):
+        if ext in ("glb", "gltf", "vrm"):  # a .vrm is a .glb with extra extensions
             bpy.ops.import_scene.gltf(filepath=src)
         elif ext == "obj":
             bpy.ops.wm.obj_import(filepath=src)

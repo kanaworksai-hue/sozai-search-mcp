@@ -294,6 +294,13 @@ def how_to_get(asset: dict) -> str:
         files = downloads.get("files") or {}
         return (f"CC0, on GitHub ({downloads.get('repo')}): call fetch_asset, or download these "
                 f"{len(files)} file(s) keeping their relative paths: " + ", ".join(files.values()))
+    if asset["source"] == "opensourceavatars":
+        files = downloads.get("files") or {}
+        others = (asset.get("attributes") or {}).get("alternates") or {}
+        line = "CC0 avatar: call fetch_asset, or download " + ", ".join(f"{u} (save as {n})" for n, u in files.items())
+        if others:
+            line += ". Also as " + ", ".join(f"{k.upper()}: {u}" for k, u in others.items())
+        return line + "."
     if asset["source"] == "megascans":
         return (f"Free on Fab: open {downloads.get('fab_listing') or asset.get('url')}, sign in with an Epic account, "
                 "add it to your library (free), then download it there (choose the format: FBX/glTF for "

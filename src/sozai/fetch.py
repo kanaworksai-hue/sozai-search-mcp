@@ -76,17 +76,36 @@ def download(url: str, expected_md5: str | None = None, max_bytes: int = MAX_DOW
     if target.is_file():
         return target
     folder.mkdir(parents=True, exist_ok=True)
+    for attempt in range(3):  # some hosts (Arweave) now and then drop a large file midway
+        try:
+            return _download_once(url, target, expected_md5, max_bytes)
+        except _CutOff as error:
+            if attempt == 2:
+                raise ToolError(f"{error}; try again") from None
+    raise AssertionError("unreachable")
+
+
+class _CutOff(Exception):
+    pass
+
+
+def _download_once(url: str, target: Path, expected_md5: str | None, max_bytes: int) -> Path:
     tmp = target.with_name(f"{target.name}.{os.getpid()}.part")  # two sessions may fetch the same file
     md5 = hashlib.md5()
     size = 0
     try:
         with open_url(url, timeout=60) as response, tmp.open("wb") as out:
+            headers = getattr(response, "headers", None) or {}
+            length, encoded = headers.get("Content-Length"), headers.get("Content-Encoding")
             while chunk := response.read(1 << 20):
                 size += len(chunk)
                 if size > max_bytes:
                     raise ToolError(f"{url} is larger than {max_bytes >> 20} MB; not downloaded")
                 md5.update(chunk)
                 out.write(chunk)
+        # read(n) returns b"" when the connection drops early, without an error: never cache a cut file
+        if length and length.isdigit() and not encoded and size != int(length):
+            raise _CutOff(f"download of {url} was cut off ({size} of {length} bytes)")
         if expected_md5 and md5.hexdigest() != expected_md5:
             raise ToolError(f"checksum mismatch for {url}")
         tmp.replace(target)
@@ -230,12 +249,20 @@ def _kit(asset: dict, folder: Path, resolution: str, fmt: str, quality: str) -> 
 
 
 def _repo(asset: dict, folder: Path, resolution: str, fmt: str, quality: str) -> tuple[Path, list[Path], list[str]]:
-    """KayKit, Polygonal Mind: the model's files from GitHub, at the commit the record was read at."""
+    """KayKit, Polygonal Mind: the model's files from GitHub, at the commit the record was read at.
+    Open Source Avatars: one .vrm (or .glb) from Arweave."""
     from sozai.repos import materialise
 
     stem = _safe_name(PurePosixPath(asset["source_id"]).name)
     work = inside(folder, stem)
     main = materialise(asset["downloads"], work)
+    if main.suffix.lower() == ".vrm":  # already one self-contained file; packing would drop nothing but the name
+        out = inside(folder, main.name)
+        shutil.move(main, out)
+        shutil.rmtree(work)
+        note = ("VRM avatar (a .glb with humanoid bones and VRM extensions): load it with a VRM importer "
+                "(three-vrm, UniVRM, VRM Add-on for Blender, VRM4U), or rename it to .glb for a plain glTF loader")
+        return out, [out], [note]
     if fmt == "glb" and main.suffix.lower() in (".gltf", ".glb"):
         from sozai.gltf_pack import needs_packing, pack
 
@@ -307,7 +334,7 @@ def _kit_files(asset: dict, folder: Path, fmt: str) -> tuple[Path, list[Path], l
 
 
 HANDLERS = {"polyhaven": _polyhaven, "ambientcg": _ambientcg, "kenney": _kit, "quaternius": _kit,
-            "kaykit": _repo, "polygonalmind": _repo}
+            "kaykit": _repo, "polygonalmind": _repo, "opensourceavatars": _repo}
 
 
 def _publish(stage: Path, folder: Path) -> None:

@@ -1,14 +1,19 @@
-"""Libraries published as public GitHub repositories: KayKit and Polygonal Mind (both CC0).
+"""Libraries published as public GitHub repositories: KayKit, Polygonal Mind and the Open Source
+Avatars registry (all CC0).
 
-Maintainers run `sozai ingest kaykit` / `sozai ingest polygonalmind`. Nothing is cloned: the file
+Maintainers run `sozai ingest kaykit|polygonalmind|opensourceavatars`. Nothing is cloned: the file
 list comes from the GitHub API (two calls per repository) and each model is measured from its glTF
 JSON alone, read from raw.githubusercontent.com (for a .glb only the JSON chunk, with a Range
 request). Every record pins the commit it was read at, so its download links keep pointing at the
 same files when a repository changes later. Models that ship without a preview get one rendered
 with Blender, from their files downloaded into the cache.
 
+Open Source Avatars keeps only its registry on GitHub; the VRM files live on Arweave (permanent
+storage), read the same way. Avatars kept only on public IPFS gateways are left out: those
+gateways stopped serving files to programs in 2026.
+
 Users get the records with the published data; fetch_asset downloads a model's files from GitHub
-and packs them into one .glb.
+(or Arweave) and packs them into one .glb (an avatar stays one .vrm).
 """
 from __future__ import annotations
 
@@ -75,16 +80,30 @@ def _tree(http: Http, repo: str, commit: str) -> list[str]:
     return [item["path"] for item in data.get("tree", []) if item.get("type") == "blob"]
 
 
-def gltf_json(http: Http, url: str) -> dict:
-    """The glTF JSON of a .gltf, or of a .glb from its first bytes only."""
-    if not urlparse(url).path.lower().endswith(".glb"):
-        return parse_gltf(http.get(url))[0]
-    head = http.get(url, {"Range": f"bytes=0-{HEAD_BYTES - 1}"})  # a server ignoring Range sends it all
+def _ranged(url: str) -> str:
+    """Where a file can be read in parts: arweave.net/<id> redirects to a host that ignores Range,
+    arweave.net/raw/<id> serves the same bytes and honours it."""
+    parsed = urlparse(url)
+    if parsed.netloc == "arweave.net" and re.fullmatch(r"/[A-Za-z0-9_-]{43}", parsed.path):
+        return f"https://arweave.net/raw{parsed.path}"
+    return url
+
+
+def gltf_json(http: Http, url: str, binary: bool | None = None) -> dict:
+    """The glTF JSON of a .gltf, or of a .glb (or .vrm) from its first bytes only. binary says
+    which it is when the URL has no file extension (Arweave)."""
+    if binary is None:
+        binary = urlparse(url).path.lower().endswith((".glb", ".vrm"))
+    raw = {"Accept": "*/*"}  # Arweave answers "Accept: application/json" with JSON about the file
+    if not binary:
+        return parse_gltf(http.get(url, raw))[0]
+    url = _ranged(url)
+    head = http.get(url, {**raw, "Range": f"bytes=0-{HEAD_BYTES - 1}"})  # a server ignoring Range sends it all
     if head[:4] != b"glTF" or len(head) < 20:
         raise ValueError(f"{url}: not a GLB")
     length = struct.unpack("<I", head[12:16])[0]
     if len(head) < 20 + length:
-        head += http.get(url, {"Range": f"bytes={len(head)}-{19 + length}"})
+        head += http.get(url, {**raw, "Range": f"bytes={len(head)}-{19 + length}"})
     return json.loads(head[20:20 + length])
 
 
@@ -137,9 +156,16 @@ def _by_name(files: list[str]) -> dict[str, list[str]]:
     return index
 
 
+def github_downloads(repo: str, commit: str, model: str, deps: dict[str, str]) -> dict:
+    return {"repo": f"https://github.com/{repo}", "commit": commit, "main": model,
+            "files": {model: raw_url(repo, commit, model),
+                      **{want: raw_url(repo, commit, have) for want, have in deps.items()}}}
+
+
 def _record(source: str, author: str, credit: str, pack: str, pack_title: str, stem: str, page: str,
-            repo: str, commit: str, model: str, deps: dict[str, str], doc: dict, tags: list[str],
-            thumbnail: str | None, attributes: dict | None = None) -> dict | None:
+            downloads: dict, doc: dict, tags: list[str], thumbnail: str | None,
+            attributes: dict | None = None, title: str | None = None, style: str = "lowpoly",
+            description: str = "") -> dict | None:
     facts = measure_doc(doc)
     if not facts["triangles"]:
         return None  # no geometry: an animation-only file, an empty scene
@@ -148,18 +174,18 @@ def _record(source: str, author: str, credit: str, pack: str, pack_title: str, s
         "id": f"{source}:{pack}/{stem}",
         "source": source,
         "source_id": f"{pack}/{stem}",
-        "title": title_of(stem),
+        "title": title or title_of(stem),
         "url": page,
         "authors": [author],
         "licence": "CC0-1.0",
         "redistributable": True,
         "credit": credit,
         "kind": "model",
-        "style": "lowpoly",
+        "style": style,
         "creation": "modeled",
         "category": source,  # the pack name is in attributes.collection (see catalog.ingest_zip)
         "tags": list(dict.fromkeys(tags)),
-        "description": "",
+        "description": description,
         "size_x": size[0], "size_y": size[1], "size_z": size[2],
         "size_source": "measured" if facts["size"] else None,
         "polycount": facts["triangles"] or None,
@@ -169,11 +195,9 @@ def _record(source: str, author: str, credit: str, pack: str, pack_title: str, s
         "animated": facts["animated"],
         "thumbnail_url": thumbnail,
         "acquire": "direct",
-        "downloads": {"repo": f"https://github.com/{repo}", "commit": commit, "main": model,
-                      "files": {model: raw_url(repo, commit, model),
-                                **{want: raw_url(repo, commit, have) for want, have in deps.items()}}},
+        "downloads": downloads,
         "attributes": {"collection": pack_title, "animations": facts["animations"],
-                       "format": PurePosixPath(model).suffix.lower().lstrip("."), **(attributes or {})},
+                       "format": PurePosixPath(downloads["main"]).suffix.lower().lstrip("."), **(attributes or {})},
         "variant_group": None,
         "popularity": None,
         "published": None,
@@ -242,7 +266,7 @@ def kaykit(http: Http, log: Callable[[str], None]) -> list[dict]:
             if "Characters" in parts:
                 tags.append("character")
             return _record("kaykit", "Kay Lousberg", credit, pack, pack_title, stems[model],
-                           f"https://github.com/{repo}", repo, commit, model, deps, doc, tags, None)
+                           f"https://github.com/{repo}", github_downloads(repo, commit, model, deps), doc, tags, None)
 
         found = _measure_all(models, work, log, pack_title)
         log(f"sozai: {pack_title}: {len(found)} models")
@@ -298,7 +322,7 @@ def polygonalmind(http: Http, log: Callable[[str], None]) -> list[dict]:
         return _record("polygonalmind", "Polygonal Mind",
                        f"{pack_title} by Polygonal Mind, CC0 (GLB conversion: github.com/{PM_MODELS})",
                        pack, pack_title, stem, project.get("github_url") or f"https://github.com/{PM_MODELS}",
-                       PM_MODELS, commit, model, deps, doc, tags,
+                       github_downloads(PM_MODELS, commit, model, deps), doc, tags,
                        raw_url(PM_MODELS, commit, thumbnail) if thumbnail in known else None,
                        {"traits": traits} if traits else None)
 
@@ -311,8 +335,111 @@ def polygonalmind(http: Http, log: Callable[[str], None]) -> list[dict]:
     return records
 
 
+# --- Open Source Avatars (a CC0 registry of VRM avatars by ToxSam; files on Arweave) ---
+
+OSA_REGISTRY = "ToxSam/open-source-avatars"
+OSA_PAGE = "https://www.opensourceavatars.com/en/avatars/"
+# Hosts that serve files to programs and keep them: Arweave is permanent storage, GitHub pins a
+# commit. Public IPFS gateways (dweb.link, ipfs.io, w3s.link) answer programs with 429 since 2026.
+STABLE_HOSTS = ("arweave.net", "raw.githubusercontent.com")
+CREATORS = {"Polygonal-Mind": "Polygonal Mind"}
+
+
+def _stable(url: str | None) -> bool:
+    host = urlparse(url or "").netloc.lower()
+    return any(host == h or host.endswith("." + h) for h in STABLE_HOSTS)
+
+
+def _file_name(url: str, stem: str, fmt: str) -> str:
+    """The model's file name: from its URL when it has one, else <stem>.<format> (Arweave URLs
+    are bare ids)."""
+    name = PurePosixPath(unquote(urlparse(url).path)).name
+    return name if name.lower().endswith((".vrm", ".glb")) else f"{stem}.{fmt}"
+
+
+def _spaced(name: str) -> str:
+    """CoolShovel -> Cool Shovel, COOLFries -> COOL Fries; names already spaced stay as they are."""
+    return re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1 \2", re.sub(r"([a-z])([A-Z])", r"\1 \2", name.strip()))
+
+
+def _avatar_stem(avatar: dict) -> str:
+    name = re.sub(r"[^A-Za-z0-9]+", "_", avatar.get("name") or "").strip("_") or avatar["id"][:8]
+    number = str((avatar.get("metadata") or {}).get("number") or "")
+    return f"{number}_{name}" if number.isdigit() else name
+
+
+def opensourceavatars(http: Http, log: Callable[[str], None]) -> list[dict]:
+    registry = _commit(http, OSA_REGISTRY)
+    projects = json.loads(http.get(raw_url(OSA_REGISTRY, registry, "data/projects.json")))
+    jobs = []
+    skipped: dict[str, int] = {}
+    for project in projects:
+        if not project.get("is_public", True) or str(project.get("license")).upper() != "CC0":
+            log(f"sozai: Open Source Avatars: left out {project.get('name')} (licence {project.get('license')})")
+            continue
+        pack = project["id"].lower().removesuffix("-collection")
+        pack_title = project.get("name") or pack
+        creator = CREATORS.get(project.get("creator_id"), project.get("creator_id") or "unknown")
+        avatars = json.loads(http.get(raw_url(OSA_REGISTRY, registry, "data/" + project["avatar_data_file"])))
+        stems: set[str] = set()
+        for avatar in avatars:
+            if avatar.get("is_draft") or not avatar.get("is_public", True):
+                continue
+            meta = avatar.get("metadata") or {}
+            alternates = meta.get("alternateModels") or {}
+            fmt = str(avatar.get("format") or "vrm").lower()
+            url = avatar.get("model_file_url")
+            if not _stable(url):  # the same avatar as a GLB on Arweave, when the VRM is only on IPFS
+                fmt, url = next(((k, v) for k, v in alternates.items() if k in ("vrm", "glb") and _stable(v)),
+                                (fmt, None))
+            if not url:
+                skipped[pack_title] = skipped.get(pack_title, 0) + 1
+                continue
+            stem = _avatar_stem(avatar)
+            while stem in stems:
+                stem += "_b"
+            stems.add(stem)
+            extra = {k: v for k, v in alternates.items() if not k.startswith("voxel_") and _stable(v) and v != url}
+            jobs.append((project, pack, pack_title, creator, avatar, stem, url, fmt, False, extra, f"{pack}/{stem}"))
+            if _stable(alternates.get("voxel_vrm")):
+                voxel = {k.removeprefix("voxel_"): v for k, v in alternates.items()
+                         if k.startswith("voxel_") and k != "voxel_vrm" and _stable(v)}
+                jobs.append((project, pack, pack_title, creator, avatar, f"{stem}_Voxel",
+                             alternates["voxel_vrm"], "vrm", True, voxel, f"{pack}/{stem}_Voxel"))
+    for title, count in skipped.items():
+        log(f"sozai: Open Source Avatars: left out {count} {title} avatars (files only on IPFS gateways)")
+
+    def work(job):
+        _, pack, pack_title, creator, avatar, stem, url, fmt, voxel, extra, _ = job
+        doc = gltf_json(http, url, binary=True)
+        meta = avatar.get("metadata") or {}
+        traits = {str(t["trait_type"]).lower(): t["value"] for t in meta.get("attributes") or []
+                  if isinstance(t, dict) and t.get("trait_type") and t.get("value") and not t.get("display_type")}
+        name = _spaced(avatar.get("name") or stem)
+        main = _file_name(url, stem, fmt)
+        tags = [*_tag_words(name), "avatar", "character", "humanoid", "vrm" if fmt == "vrm" else "glb",
+                *(w for v in traits.values() for w in _words(str(v))), *(["voxel"] if voxel else [])]
+        attributes = {"avatar_id": avatar["id"], **({"traits": traits} if traits else {}),
+                      **({"alternates": extra} if extra else {}), **({"number": meta["number"]} if meta.get("number") else {})}
+        record = _record(
+            "opensourceavatars", creator, f"{pack_title} by {creator}, CC0 (via Open Source Avatars, opensourceavatars.com)",
+            pack, pack_title, stem, OSA_PAGE + avatar["id"],
+            {"registry": f"https://github.com/{OSA_REGISTRY}", "commit": registry, "main": main, "files": {main: url}},
+            doc, tags, avatar.get("thumbnail_url") if _stable(avatar.get("thumbnail_url")) and not voxel else None,
+            attributes, title=f"{name} (voxel)" if voxel else name,
+            style="lowpoly" if creator == "Polygonal Mind" else "stylized",
+            description=(avatar.get("description") or "").strip())
+        if record and _stable((meta.get("alternateModels") or {}).get("voxel_vrm")):  # the avatar and its voxel version
+            record["variant_group"] = f"opensourceavatars:{pack}/{stem.removesuffix('_Voxel')}"
+        return record
+
+    records = _measure_all(jobs, work, log, "Open Source Avatars")
+    log(f"sozai: Open Source Avatars: {len(records)} avatars")
+    return records
+
+
 LIBRARIES: dict[str, Callable[[Http, Callable[[str], None]], list[dict]]] = {
-    "kaykit": kaykit, "polygonalmind": polygonalmind}
+    "kaykit": kaykit, "polygonalmind": polygonalmind, "opensourceavatars": opensourceavatars}
 
 
 # --- shared steps ---
@@ -322,6 +449,8 @@ def group_variants(records: list[dict]) -> None:
     chair_A / chair_B, building_blue / building_red) fold into one search result with variants."""
     groups: dict[str, list[dict]] = {}
     for record in records:
+        if record.get("variant_group"):  # grouped by its library already (an avatar and its voxel version)
+            continue
         pack, _, stem = record["source_id"].partition("/")
         words = [w.lower() for w in name_words(stem)]
         words = [w for w in words if w not in COLOURS and not w.isdigit() and len(w) > 1]

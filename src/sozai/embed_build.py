@@ -62,10 +62,13 @@ def _quantise(rows):
 
 
 def _image_bytes(url: str) -> bytes | None:
+    from sozai.fetch import download
     from sozai.view import thumbnail_bytes
 
     try:
-        return thumbnail_bytes(url)  # file:// read, https downloaded once into the cache
+        if url.startswith("https://"):  # some libraries' previews are large PNGs (up to ~20 MB)
+            return download(url, max_bytes=64 << 20).read_bytes()
+        return thumbnail_bytes(url)  # file:// from the catalog folder
     except Exception:
         return None
 

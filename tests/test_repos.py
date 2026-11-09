@@ -178,3 +178,77 @@ def test_rate_limited_api_falls_back_to_git(monkeypatch):
     assert repos._commit(Http(), "o/r") == SHA
     assert repos._tree(Http(), "o/r", SHA) == ["a.gltf", "b/c.bin"]
     assert calls == ["ls-remote", "clone", "-C"]
+
+
+AVATAR = "https://arweave.net/" + "a" * 43
+VOXEL = "https://arweave.net/" + "b" * 43
+
+
+def test_open_source_avatars_reads_arweave_and_skips_ipfs(monkeypatch, tmp_path):
+    monkeypatch.setenv("SOZAI_HOME", str(tmp_path))
+    projects = [{"id": "100avatars-r1", "name": "100Avatars R1", "license": "CC0", "is_public": True,
+                 "creator_id": "Polygonal-Mind", "avatar_data_file": "avatars/r1.json"},
+                {"id": "nft", "name": "Some NFT", "license": "CC-BY", "is_public": True,
+                 "creator_id": "x", "avatar_data_file": "avatars/nft.json"}]
+    avatars = [{"id": "uuid-devil", "name": "Devil", "format": "VRM", "is_public": True, "description": "Avatar 031: Devil",
+                "model_file_url": AVATAR, "thumbnail_url": "https://arweave.net/" + "c" * 43,
+                "metadata": {"number": "031", "alternateModels": {
+                    "fbx": "https://arweave.net/" + "d" * 43, "voxel_vrm": VOXEL,
+                    "voxel_fbx": "https://arweave.net/" + "e" * 43}}},
+               {"id": "uuid-ipfs", "name": "Gone", "format": "VRM", "is_public": True,
+                "model_file_url": "https://dweb.link/ipfs/Qm/gone.vrm"}]
+    model = glb(cube(), bytes(168) + png(4, 4))
+    served = {repos.raw_url(repos.OSA_REGISTRY, SHA, "data/projects.json"): json.dumps(projects).encode(),
+              repos.raw_url(repos.OSA_REGISTRY, SHA, "data/avatars/r1.json"): json.dumps(avatars).encode(),
+              # measuring reads arweave.net/raw/<id>, the endpoint that honours Range
+              "https://arweave.net/raw/" + "a" * 43: model, "https://arweave.net/raw/" + "b" * 43: model}
+    accepts = []
+
+    def get(self, url, headers=None):
+        if url == f"{repos.API}/{repos.OSA_REGISTRY}/commits/HEAD":
+            return json.dumps({"sha": SHA}).encode()
+        assert url in served, url
+        accepts.append((headers or {}).get("Accept"))
+        data = served[url]
+        if headers and "Range" in headers:
+            start, end = headers["Range"].removeprefix("bytes=").split("-")
+            return data[int(start):int(end) + 1]
+        return data
+
+    monkeypatch.setattr(Http, "get", get)
+    logs = []
+    report = repos.ingest("opensourceavatars", log=logs.append, thumbnails=False)
+    assert report["models"] == 2  # the avatar and its voxel version; the CC-BY pack and the IPFS one left out
+    assert any("CC-BY" in line for line in logs) and any("IPFS" in line for line in logs)
+    assert "application/json" not in accepts  # Arweave would answer with JSON about the file
+    rows = {r["source_id"]: r for r in catalog.load_catalogs()["opensourceavatars"]}
+    devil, voxel = rows["100avatars-r1/031_Devil"], rows["100avatars-r1/031_Devil_Voxel"]
+    assert devil["title"] == "Devil" and voxel["title"] == "Devil (voxel)"
+    assert devil["downloads"]["files"] == {"031_Devil.vrm": AVATAR} and devil["attributes"]["format"] == "vrm"
+    assert devil["attributes"]["alternates"] == {"fbx": "https://arweave.net/" + "d" * 43}
+    assert voxel["attributes"]["alternates"] == {"fbx": "https://arweave.net/" + "e" * 43}
+    assert devil["variant_group"] == voxel["variant_group"] == "opensourceavatars:100avatars-r1/031_Devil"
+    assert devil["url"] == repos.OSA_PAGE + "uuid-devil" and devil["authors"] == ["Polygonal Mind"]
+    assert devil["licence"] == "CC0-1.0" and devil["style"] == "lowpoly" and devil["size_y"] == 0.5
+    assert {"avatar", "character", "devil"} <= set(devil["tags"]) and "voxel" in voxel["tags"]
+    assert devil["thumbnail_url"] and voxel["thumbnail_url"] is None
+    assert AVATAR in how_to_get(devil) and "FBX" in how_to_get(devil)
+
+
+def test_fetch_keeps_an_avatar_as_one_vrm(tmp_path, monkeypatch):
+    monkeypatch.setenv("SOZAI_HOME", str(tmp_path / "home"))
+    model = glb(cube(), bytes(168) + png(4, 4))
+
+    def download(url, md5=None):
+        path = tmp_path / "cache" / "x"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(model)
+        return path
+
+    monkeypatch.setattr(fetch, "download", download)
+    asset = {"id": "opensourceavatars:r1/031_Devil", "title": "Devil", "source": "opensourceavatars", "source_id": "r1/031_Devil",
+             "licence": "CC0-1.0", "credit": "Devil", "attributes": {},
+             "downloads": {"main": "031_Devil.vrm", "files": {"031_Devil.vrm": AVATAR}}}
+    out = fetch.fetch_asset(asset, str(tmp_path / "project"))
+    assert out["files"] == ["031_Devil.vrm"] and any("VRM" in note for note in out["notes"])
+    assert (tmp_path / "project" / "031_Devil.vrm").read_bytes() == model
