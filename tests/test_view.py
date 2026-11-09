@@ -39,6 +39,17 @@ def test_view_returns_numbered_images_and_skips_gracefully(tmp_path, monkeypatch
     assert result.structured == {"shown": ["kenney:k/a"]}
 
 
+def test_large_previews_are_shrunk_or_linked(monkeypatch):
+    big = png(16, 16) + bytes(view.MAX_BYTES)  # a PNG over the size an image block may have
+    monkeypatch.setattr(view, "thumbnail_bytes", lambda url: big)
+    assets = [{"id": "opensourceavatars:r1/a", "title": "A", "thumbnail_url": "https://arweave.net/x"}]
+    monkeypatch.setattr(view, "_shrink", lambda data: None)  # no Pillow: the link instead
+    assert view.view(assets).blocks[0]["text"].endswith("(preview too large to show here: https://arweave.net/x)")
+    monkeypatch.setattr(view, "_shrink", lambda data: png(4, 4))
+    blocks = view.view(assets).blocks
+    assert [b["type"] for b in blocks] == ["text", "image"] and blocks[1]["mimeType"] == "image/png"
+
+
 def test_ambientcg_thumbnails_use_webp():
     url = "https://acg-media.struffelproductions.com/file/ambientCG-Web/media/thumbnail/256-PNG/Bricks059.png"
     assert view._small_url(url).endswith("/256-WEBP/Bricks059.webp")

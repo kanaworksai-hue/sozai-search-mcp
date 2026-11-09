@@ -20,7 +20,7 @@
 
 </div>
 
-**Sozai Search MCP** は、Claude Code、Claude Desktop、Cursor など任意の [MCP](https://modelcontextprotocol.io) クライアントに、**38,000 点の無料 3D 素材**のライブラリを追加します。Poly Haven と ambientCG のフォトリアルなモデル・PBR マテリアル・HDRI、Kenney、Quaternius、KayKit、Polygonal Mind のローポリなゲーム用モデル、そして Quixel Megascans の掲載情報です。「高さ 1 m 以下の木箱」や「苔むした岩」と頼むと、エージェントがキーワードや意味で検索し、プレビューを見て選び、メートル単位の実寸のままファイルをプロジェクトに置いてくれます。（名前の *Sozai* は日本語の「素材」から取っています。）
+**Sozai Search MCP** は、Claude Code、Claude Desktop、Cursor など任意の [MCP](https://modelcontextprotocol.io) クライアントに、**38,000 点の無料 3D 素材**のライブラリを追加します。Poly Haven と ambientCG のフォトリアルなモデル・PBR マテリアル・HDRI、Kenney、Quaternius、KayKit、Polygonal Mind のローポリなゲーム用モデル、Open Source Avatars のリグ付き VRM アバター、そして Quixel Megascans の掲載情報です。「高さ 1 m 以下の木箱」や「苔むした岩」と頼むと、エージェントがキーワードや意味で検索し、プレビューを見て選び、メートル単位の実寸のままファイルをプロジェクトに置いてくれます。（名前の *Sozai* は日本語の「素材」から取っています。）
 
 Sozai Search はインデックスです。素材ファイルは一切ホストしていません。どの結果も公式の配布元を指していて、ファイルはあなたのマシンが配布元から直接ダウンロードします。
 
@@ -143,6 +143,7 @@ clone しなくても、uv で GitHub から直接実行できます：`uvx --fr
 | [Quaternius](https://quaternius.com) | ローポリのモデル。リグ付き・アニメーション付きも多数 | CC0 | 自分でダウンロードしたキットの zip から |
 | [KayKit](https://kaylousberg.com) | ローポリのゲーム用パック（キャラクター、ダンジョン、家具、レストラン、ハロウィンなど） | CC0 | GitHub からダウンロード |
 | [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release) | メタバース空間のローポリな小物や背景（GLB 版は [ToxSam](https://github.com/ToxSam/cc0-models-Polygonal-Mind)） | CC0 | GitHub からダウンロード |
+| [Open Source Avatars](https://www.opensourceavatars.com) | リグ付きの人型 VRM アバター：Polygonal Mind の 100Avatars（ボクセル版も）など（[レジストリ](https://github.com/ToxSam/open-source-avatars)） | CC0 | Arweave からダウンロード |
 | [Quixel Megascans](https://www.fab.com/sellers/Quixel) | フォトリアルなスキャン | Fab Standard License | Sozai Search ではダウンロード不可。結果は Fab へのリンク |
 
 Megascans は Fab で無料です。Epic アカウントで入手（claim）してからダウンロードしてください。自分のプロジェクトでは使えますが、ファイルの再配布はできません。掲載情報の 3 つの寸法は軸の順序が決まっていないため、`dims_m`（大きい順）として返し、高さのフィルターには使いません。
@@ -194,7 +195,7 @@ Sozai Search の接続は https のみで、接続先は上記のライブラリ
 <details>
 <summary><b>素材を商用のゲームや動画に使えますか？</b></summary>
 
-Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind の素材は CC0 なので、どんな用途にも無料で使え、クレジットも不要です（それでも Sozai Search は `CREDITS.md` を書き出します。また Poly Haven は、API 経由で同社の素材を表示する場所に「Powered by Poly Haven」と記載するよう求めています）。Megascans は Fab Standard License で、自分のプロジェクトでは使えますが、ファイルの再配布はできません。すべての結果にライセンスが明記されています。
+Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind、Open Source Avatars の素材は CC0 なので、どんな用途にも無料で使え、クレジットも不要です（それでも Sozai Search は `CREDITS.md` を書き出します。また Poly Haven は、API 経由で同社の素材を表示する場所に「Powered by Poly Haven」と記載するよう求めています）。Megascans は Fab Standard License で、自分のプロジェクトでは使えますが、ファイルの再配布はできません。すべての結果にライセンスが明記されています。
 </details>
 
 <details>
@@ -248,7 +249,7 @@ src/sozai/
   bundle.py        公開データの zip（pack / install）
   fetch.py         ダウンロード、.glb へのパック、クレジット
   catalog.py       キットの取り込み（Kenney、Quaternius）。scale.py は校正、thumbs.py はプレビュー
-  repos.py         GitHub で公開されているライブラリ（KayKit、Polygonal Mind）
+  repos.py         GitHub で公開されているライブラリ（KayKit、Polygonal Mind、Open Source Avatars）
   sources/         Poly Haven、ambientCG、Megascans
 ```
 
@@ -259,9 +260,9 @@ src/sozai/
 - **このプロジェクト：** [MIT](LICENSE)、© 東京AI映像合同会社
 - **素材：** 各素材にはそれぞれのライセンスがあり、結果ごとに明記されています。Sozai Search は素材ファイルを一切配布しません。公開データには専用の `NOTICE.txt` が含まれています。
 - **ブランド：** KanaWorks_AI の名称、ロゴ、Kana のキャラクターの権利は東京AI映像合同会社に帰属し、MIT ライセンスの対象**外**です。詳しくは [docs/brand](docs/brand/README.md) を参照してください。
-- **使用している技術・データ：** [Poly Haven](https://polyhaven.com)（Powered by Poly Haven）、[ambientCG](https://ambientcg.com)、[Kenney](https://kenney.nl)、[Quaternius](https://quaternius.com)、[KayKit](https://kaylousberg.com)、[Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release)、[EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2)、[Model Context Protocol](https://modelcontextprotocol.io)
+- **使用している技術・データ：** [Poly Haven](https://polyhaven.com)（Powered by Poly Haven）、[ambientCG](https://ambientcg.com)、[Kenney](https://kenney.nl)、[Quaternius](https://quaternius.com)、[KayKit](https://kaylousberg.com)、[Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release)、[Open Source Avatars](https://www.opensourceavatars.com)、[EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2)、[Model Context Protocol](https://modelcontextprotocol.io)
 
-本プロジェクトは独立したプロジェクトであり、Epic Games、Quixel、Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind、Google、Anthropic とは関係がなく、その承認も受けていません。
+本プロジェクトは独立したプロジェクトであり、Epic Games、Quixel、Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind、Open Source Avatars、Google、Anthropic とは関係がなく、その承認も受けていません。
 
 <br>
 

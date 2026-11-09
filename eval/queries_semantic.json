@@ -287,5 +287,25 @@
    "sign",
    "neon"
   ]
+ },
+ {
+  "query": "宇宙飛行士のアバター",
+  "filters": {
+   "kind": "model",
+   "rigged": true
+  },
+  "expect": [
+   "astro",
+   "cosmonaut"
+  ]
+ },
+ {
+  "query": "a werewolf character I can use as a VRM avatar",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "wolf"
+  ]
  }
 ]

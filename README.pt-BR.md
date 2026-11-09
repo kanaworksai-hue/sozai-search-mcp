@@ -20,7 +20,7 @@
 
 </div>
 
-**Sozai Search MCP** dá ao Claude Code, ao Claude Desktop, ao Cursor e a qualquer outro cliente [MCP](https://modelcontextprotocol.io) uma biblioteca de **38.000 assets 3D gratuitos**: modelos fotorrealistas, materiais PBR e HDRIs do Poly Haven e do ambientCG, modelos low-poly para jogos do Kenney, do Quaternius, do KayKit e da Polygonal Mind, e listagens do Quixel Megascans. Peça "um caixote de madeira com menos de 1 m de altura" ou "uma pedra com musgo": o agente busca por palavras ou por significado, olha as prévias e coloca os arquivos no seu projeto, no tamanho real em metros. (*Sozai*, 素材, significa "materiais" em japonês.)
+**Sozai Search MCP** dá ao Claude Code, ao Claude Desktop, ao Cursor e a qualquer outro cliente [MCP](https://modelcontextprotocol.io) uma biblioteca de **38.000 assets 3D gratuitos**: modelos fotorrealistas, materiais PBR e HDRIs do Poly Haven e do ambientCG, modelos low-poly para jogos do Kenney, do Quaternius, do KayKit e da Polygonal Mind, avatares VRM com rig do Open Source Avatars, e listagens do Quixel Megascans. Peça "um caixote de madeira com menos de 1 m de altura" ou "uma pedra com musgo": o agente busca por palavras ou por significado, olha as prévias e coloca os arquivos no seu projeto, no tamanho real em metros. (*Sozai*, 素材, significa "materiais" em japonês.)
 
 O Sozai Search é um índice. Ele não hospeda nenhum arquivo de asset: cada resultado aponta para a fonte oficial, e os arquivos são baixados de lá pela sua própria máquina.
 
@@ -143,6 +143,7 @@ Os tamanhos são `[width, height, depth]` em metros, com a altura no eixo vertic
 | [Quaternius](https://quaternius.com) | Modelos low-poly, muitos com rig e animação | CC0 | Dos zips dos kits que você baixa |
 | [KayKit](https://kaylousberg.com) | Packs low-poly para jogos: personagens, masmorra, móveis, restaurante, Halloween | CC0 | Baixados do GitHub |
 | [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release) | Objetos e cenários low-poly de mundos do metaverso (versões GLB de [ToxSam](https://github.com/ToxSam/cc0-models-Polygonal-Mind)) | CC0 | Baixados do GitHub |
+| [Open Source Avatars](https://www.opensourceavatars.com) | Avatares humanoides VRM com rig: 100Avatars da Polygonal Mind (também em versão voxel) e mais ([registro](https://github.com/ToxSam/open-source-avatars)) | CC0 | Baixados do Arweave |
 | [Quixel Megascans](https://www.fab.com/sellers/Quixel) | Scans fotorrealistas | Fab Standard License | Não podem ser baixados pelo Sozai Search: os resultados levam ao Fab |
 
 Os Megascans são gratuitos no Fab: resgate-os com uma conta Epic e depois baixe. Você pode usá-los nos seus projetos, mas não pode redistribuir os arquivos. As três dimensões de uma listagem não vêm em uma ordem fixa de eixos, por isso são informadas como `dims_m` (a maior primeiro) e ficam fora dos filtros de altura.
@@ -194,7 +195,7 @@ O Sozai Search só se conecta via https, e apenas às bibliotecas acima, ao GitH
 <details>
 <summary><b>Posso usar os assets em um jogo ou vídeo comercial?</b></summary>
 
-Os assets do Poly Haven, ambientCG, Kenney, Quaternius, KayKit e Polygonal Mind são CC0: livres para qualquer uso, sem necessidade de crédito (mesmo assim o Sozai Search escreve o `CREDITS.md`, e o Poly Haven pede "Powered by Poly Haven" onde você exibir os assets deles pela API). Os Megascans estão sob a Fab Standard License: use nos seus projetos, mas não redistribua os arquivos. Cada resultado informa a sua licença.
+Os assets do Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind e Open Source Avatars são CC0: livres para qualquer uso, sem necessidade de crédito (mesmo assim o Sozai Search escreve o `CREDITS.md`, e o Poly Haven pede "Powered by Poly Haven" onde você exibir os assets deles pela API). Os Megascans estão sob a Fab Standard License: use nos seus projetos, mas não redistribua os arquivos. Cada resultado informa a sua licença.
 </details>
 
 <details>
@@ -248,7 +249,7 @@ src/sozai/
   bundle.py        the published data zip (pack / install)
   fetch.py         downloads, packing .glb, credits
   catalog.py       kit ingest (Kenney, Quaternius); scale.py calibration, thumbs.py previews
-  repos.py         libraries on GitHub (KayKit, Polygonal Mind)
+  repos.py         libraries on GitHub (KayKit, Polygonal Mind, Open Source Avatars)
   sources/         Poly Haven, ambientCG, Megascans
 ```
 
@@ -259,9 +260,9 @@ Os mantenedores geram uma release de dados com `sozai build --live`, `sozai inge
 - **Este projeto:** [MIT](LICENSE), © 東京AI映像合同会社 (Tokyo AI Visuals LLC).
 - **Assets:** cada asset mantém a sua própria licença, informada em cada resultado. O Sozai Search não distribui nenhum arquivo de asset. Os dados publicados trazem o seu próprio `NOTICE.txt`.
 - **Marca:** o nome KanaWorks_AI, o logo e a personagem Kana são © 東京AI映像合同会社 e **não** são cobertos pela licença MIT. Veja [docs/brand](docs/brand/README.md).
-- **Construído com:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [KayKit](https://kaylousberg.com), [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release), o [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) e o [Model Context Protocol](https://modelcontextprotocol.io).
+- **Construído com:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [KayKit](https://kaylousberg.com), [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release), [Open Source Avatars](https://www.opensourceavatars.com), o [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) e o [Model Context Protocol](https://modelcontextprotocol.io).
 
-Este é um projeto independente, sem afiliação nem endosso da Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind, Google ou Anthropic.
+Este é um projeto independente, sem afiliação nem endosso da Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind, Open Source Avatars, Google ou Anthropic.
 
 <br>
 

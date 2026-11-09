@@ -36,6 +36,25 @@ def _mime(data: bytes) -> str | None:
     return None
 
 
+def _shrink(data: bytes, side: int = 512) -> bytes | None:
+    """A large preview (some libraries publish 1-2 MB PNGs) made small enough to show, with Pillow
+    when it is installed; None without it."""
+    try:
+        import io
+
+        from PIL import Image
+    except ImportError:
+        return None
+    try:
+        image = Image.open(io.BytesIO(data))
+        image.thumbnail((side, side))
+        out = io.BytesIO()
+        image.convert("RGBA" if image.mode in ("RGBA", "LA", "P") else "RGB").save(out, "WEBP", quality=80)
+        return out.getvalue()
+    except Exception:  # not an image Pillow can read
+        return None
+
+
 def thumbnail_bytes(url: str) -> bytes:
     parsed = urlparse(url)
     if parsed.scheme == "file":  # kit previews that `sozai ingest` wrote; nothing else on disk
@@ -118,9 +137,11 @@ def view(assets: list[dict]) -> ToolContent:
         except Exception as error:  # a missing preview should not hide the others
             blocks.append({"type": "text", "text": f"{label} (thumbnail unavailable: {error})"})
             continue
+        if len(data) > MAX_BYTES:
+            data = _shrink(data) or data
         mime = _mime(data)
         if mime is None or len(data) > MAX_BYTES:
-            blocks.append({"type": "text", "text": label + " (thumbnail not a small image)"})
+            blocks.append({"type": "text", "text": f"{label} (preview too large to show here: {url})"})
             continue
         blocks.append({"type": "text", "text": label})
         blocks.append({"type": "image", "data": base64.b64encode(data).decode(), "mimeType": mime})

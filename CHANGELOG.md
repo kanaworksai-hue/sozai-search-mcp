@@ -13,6 +13,12 @@ with the code release that first expects them.
   glTF JSON without cloning (a Range request reads only a GLB's JSON chunk), render missing
   previews, and fall back to `git` for file lists when the GitHub API rate limit is reached.
 - Models of one pack that differ only by a colour word fold into one result with variants.
+- New library: Open Source Avatars, 512 rigged CC0 VRM avatars (Polygonal Mind's 100Avatars R1-R3,
+  their voxel versions, and the NeonGlitch86 collection), read from the registry on GitHub and
+  measured from the files on Arweave. `fetch_asset` delivers one `.vrm`; FBX versions are listed
+  where the registry has them. Avatars kept only on public IPFS gateways and the CC-BY collection
+  are left out. `sozai ingest opensourceavatars` (maintainers).
+- `view_assets` shrinks previews over 400 KB when Pillow is installed, and links them otherwise.
 
 ## 0.1.0 (2026-11-08)
 

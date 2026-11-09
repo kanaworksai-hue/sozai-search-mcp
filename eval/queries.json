@@ -759,5 +759,45 @@
   "expect": [
    "lamp"
   ]
+ },
+ {
+  "query": "astronaut",
+  "alternatives": [
+   "cosmonaut"
+  ],
+  "filters": {
+   "source": "opensourceavatars"
+  },
+  "expect": [
+   "astro",
+   "cosmonaut"
+  ]
+ },
+ {
+  "query": "zombie",
+  "filters": {
+   "source": "opensourceavatars"
+  },
+  "expect": [
+   "zombie"
+  ]
+ },
+ {
+  "query": "witch",
+  "filters": {
+   "source": "opensourceavatars"
+  },
+  "expect": [
+   "witch"
+  ]
+ },
+ {
+  "query": "pirate",
+  "filters": {
+   "source": "opensourceavatars"
+  },
+  "expect": [
+   "pirate"
+  ]
  }
 ]

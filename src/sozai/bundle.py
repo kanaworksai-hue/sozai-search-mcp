@@ -42,13 +42,15 @@ get it, plus search vectors computed by Sozai Search. It contains no asset files
 - Kenney and Quaternius records were measured from their CC0 kits by Sozai Search.
 - KayKit (Kay Lousberg, github.com/KayKit-Game-Assets) and Polygonal Mind (GLB versions at
   github.com/ToxSam/cc0-models-Polygonal-Mind) records were measured from their CC0 files on GitHub.
+- Open Source Avatars records (https://www.opensourceavatars.com, registry at
+  github.com/ToxSam/open-source-avatars) were measured from the CC0 VRM files on Arweave.
 - Quixel Megascans records describe listings on Fab (https://www.fab.com). The assets
   themselves are on Fab under the Fab Standard License and are never included.
 - Sozai Search's own fields (measured sizes, scale calibration, search text) and the vectors
   are released under the MIT licence, like its code.
 
 Not affiliated with or endorsed by Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius,
-KayKit or Polygonal Mind.
+KayKit, Polygonal Mind or Open Source Avatars.
 """
 KIT_SOURCES = ("kenney", "quaternius")
 

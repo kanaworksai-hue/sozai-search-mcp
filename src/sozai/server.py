@@ -18,8 +18,8 @@ from sozai.protocol import StdioServer, Tool, ToolError
 INSTRUCTIONS = """\
 Sozai Search finds free 3D assets with real-world sizes in metres: photoreal models, PBR materials and
 HDRIs from Poly Haven and ambientCG (CC0); low-poly game models, many rigged and animated, from
-Kenney, Quaternius, KayKit and Polygonal Mind (CC0); and Quixel Megascans scans (free on Fab, Fab
-Standard License).
+Kenney, Quaternius, KayKit and Polygonal Mind (CC0); rigged VRM avatars from Open Source Avatars
+(CC0); and Quixel Megascans scans (free on Fab, Fab Standard License).
 
 How to search well:
 - Write `query` as 1-4 English keywords for the thing itself ("wooden crate", "red brick", "sunset sky").
@@ -46,7 +46,8 @@ Credit: when you show or use Poly Haven assets, say "Powered by Poly Haven" (the
 
 KINDS = ["model", "material", "hdri", "decal", "atlas", "texture", "substance", "terrain", "brush"]
 STYLES = ["photoreal", "stylized", "lowpoly"]
-SOURCES = ["polyhaven", "ambientcg", "kenney", "quaternius", "kaykit", "polygonalmind", "megascans"]
+SOURCES = ["polyhaven", "ambientcg", "kenney", "quaternius", "kaykit", "polygonalmind", "opensourceavatars",
+           "megascans"]
 
 
 def _one_or_many(values: list[str], description: str) -> dict:
@@ -285,8 +286,8 @@ def main(argv: list[str] | None = None) -> None:
     fetch.add_argument("--resolution", choices=["1k", "2k", "4k", "8k"])
     fetch.add_argument("--format", choices=["glb", "gltf"], default="glb")
     ingest = commands.add_parser("ingest", help="catalog a folder of kit zips (kenney, quaternius) or a library "
-                                 "on GitHub (maintainers: kaykit, polygonalmind), then rebuild")
-    ingest.add_argument("source", choices=["kenney", "quaternius", "kaykit", "polygonalmind"])
+                                 "on GitHub (maintainers: kaykit, polygonalmind, opensourceavatars), then rebuild")
+    ingest.add_argument("source", choices=["kenney", "quaternius", "kaykit", "polygonalmind", "opensourceavatars"])
     ingest.add_argument("folder", nargs="?", help="the folder of kit zips (kenney, quaternius only)")
     ingest.add_argument("--no-thumbnails", action="store_true",
                         help="skip rendering previews with Blender for models that ship without one")

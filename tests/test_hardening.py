@@ -117,6 +117,27 @@ def test_download_size_cap(tmp_path, monkeypatch):
     assert not list((tmp_path / "home" / "cache").glob("**/*"))[1:]  # only the empty digest folder
 
 
+def test_download_cut_short_is_not_cached(tmp_path, monkeypatch):
+    monkeypatch.setenv("SOZAI_HOME", str(tmp_path / "home"))
+    calls = []
+
+    def cut(url, timeout):  # the server promises 1000 bytes; the connection drops at 700
+        calls.append(url)
+        response = FakeResponse(b"x" * 700)
+        response.headers = {"Content-Length": "1000"}
+        return response
+
+    monkeypatch.setattr(fetch, "open_url", cut)
+    with pytest.raises(fetch.ToolError, match="cut off"):
+        fetch.download("https://arweave.net/abc")
+    assert len(calls) == 3  # tried again twice
+    assert not [p for p in (tmp_path / "home" / "cache").rglob("*") if p.is_file()]
+    whole = FakeResponse(b"x" * 1000)
+    whole.headers = {"Content-Length": "1000"}
+    monkeypatch.setattr(fetch, "open_url", lambda url, timeout: whole)
+    assert fetch.download("https://arweave.net/abc").stat().st_size == 1000
+
+
 def test_urls_are_limited_to_known_https_hosts(tmp_path, monkeypatch):
     monkeypatch.setenv("SOZAI_HOME", str(tmp_path / "home"))
     http.check_url("https://dl.polyhaven.org/file/a.glb")

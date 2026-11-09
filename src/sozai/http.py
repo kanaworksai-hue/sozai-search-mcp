@@ -21,6 +21,7 @@ ALLOWED_HOSTS = (  # a host matches itself and its subdomains
     "fab.com",                                        # Megascans listings and preview images
     "github.com", "githubusercontent.com",            # the published data release
     "huggingface.co", "hf.co",                        # the query model, the Megascans listing table
+    "arweave.net",                                    # Open Source Avatars files (permanent storage)
 )
 
 
