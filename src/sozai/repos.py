@@ -1,7 +1,7 @@
 """Libraries published as public GitHub repositories: KayKit, Polygonal Mind and the Open Source
-Avatars registry (all CC0).
+Avatars registry (all CC0), and NASA 3D Resources (NASA media usage guidelines).
 
-Maintainers run `sozai ingest kaykit|polygonalmind|opensourceavatars`. Nothing is cloned: the file
+Maintainers run `sozai ingest kaykit|polygonalmind|opensourceavatars|nasa`. Nothing is cloned: the file
 list comes from the GitHub API (two calls per repository) and each model is measured from its glTF
 JSON alone, read from raw.githubusercontent.com (for a .glb only the JSON chunk, with a Range
 request). Every record pins the commit it was read at, so its download links keep pointing at the
@@ -12,11 +12,16 @@ Open Source Avatars keeps only its registry on GitHub; the VRM files live on Arw
 storage), read the same way. Avatars kept only on public IPFS gateways are left out: those
 gateways stopped serving files to programs in 2026.
 
+NASA keeps no metadata beside its files: each folder's description and small previews come from
+its page on science.nasa.gov, read once per folder at ingest time, a second apart. NASA models
+share no unit, so their sizes stay in the file's units (attributes.size_units) and none is reported.
+
 Users get the records with the published data; fetch_asset downloads a model's files from GitHub
 (or Arweave) and packs them into one .glb (an avatar stays one .vrm).
 """
 from __future__ import annotations
 
+import html
 import json
 import os
 import posixpath
@@ -438,8 +443,107 @@ def opensourceavatars(http: Http, log: Callable[[str], None]) -> list[dict]:
     return records
 
 
+# --- NASA 3D Resources (spacecraft, rovers, telescopes, asteroids; NASA media usage guidelines) ---
+
+NASA_REPO = "nasa/NASA-3D-Resources"
+NASA_SITE = "https://science.nasa.gov/3d-resources/"
+NASA_ASSETS = "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/"
+NASA_THUMB = "/jcr:content/renditions/cq5dam.thumbnail.319.319.png"  # ~20 KB; the repository's PNGs are ~1 MB
+NASA_LICENCE = "LicenseRef-NASA-Media-Guidelines"
+NASA_GUIDELINES = "https://www.nasa.gov/nasa-brand-center/images-and-media/"
+NASA_CREDIT = (f"NASA 3D Resources (github.com/{NASA_REPO}). Courtesy NASA; not subject to copyright in the US. "
+               f"Do not imply NASA endorsement; NASA logos and insignia need permission: {NASA_GUIDELINES}")
+NASA_SCALE = ("NASA models use no common unit (some are in metres, others in arbitrary units); "
+              "size_units are the file's own units: scale it against the real object")
+SITE_PAUSE = 1.0  # science.nasa.gov asks crawlers for one second between requests
+
+
+def _nasa_slug(folder: str) -> str:
+    """The science.nasa.gov page of a repository folder: Aqua (A) -> aqua-a."""
+    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", folder.lower())).strip("-")
+
+
+def _meta(page: str, prop: str) -> str:
+    match = re.search(rf'<meta[^>]+property="{re.escape(prop)}"[^>]+content="([^"]*)"', page)
+    return html.unescape(match.group(1)).strip() if match else ""
+
+
+def nasa_page(http: Http, folder: str) -> dict:
+    """What the folder's page on science.nasa.gov says: a one-paragraph description and the
+    previews it shows ({png file name: small preview URL}). Empty when there is no page."""
+    url = NASA_SITE + _nasa_slug(folder) + "/"
+    try:
+        page = http.get(url, {"Accept": "text/html"}).decode("utf-8", "replace")
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return {}
+        raise
+    previews = {}
+    for found in re.findall(r'https://assets\.science\.nasa\.gov/content/dam/science/cds/3d/resources/'
+                            r'[^"\s]+?\.png(?=/jcr:content|["\s])', page):
+        previews.setdefault(unquote(found.rsplit("/", 1)[1]).lower(), found + NASA_THUMB)
+    description = _meta(page, "og:description")
+    return {"page": url, "description": description.rstrip(" .") + "." if description else "", "previews": previews}
+
+
+def nasa(http: Http, log: Callable[[str], None]) -> list[dict]:
+    import time
+
+    commit = _commit(http, NASA_REPO)
+    files = _tree(http, NASA_REPO, commit)
+    known, by_name = set(files), _by_name(files)
+    folders: dict[str, list[str]] = {}
+    for path in files:
+        parts = PurePosixPath(path).parts
+        if len(parts) == 3 and parts[0] == "3D Models" and path.lower().endswith(".glb"):
+            folders.setdefault(parts[1], []).append(path)
+    skipped = sorted({PurePosixPath(p).parts[1] for p in files if p.startswith("3D Models/")
+                      and len(PurePosixPath(p).parts) == 3} - set(folders))
+    if skipped:
+        log(f"sozai: NASA: left out {len(skipped)} folders with no .glb (.blend, .3ds or split .7z only): "
+            + ", ".join(skipped))
+    pages = {}
+    for folder in sorted(folders):  # one page per folder, politely: these are not an API
+        pages[folder] = nasa_page(http, folder)
+        time.sleep(SITE_PAUSE)
+    log(f"sozai: NASA: {sum(1 for p in pages.values() if p)} of {len(folders)} folders have a page on science.nasa.gov")
+    jobs = [(folder, model, folder) for folder, models in folders.items() for model in models]
+
+    def work(job):
+        folder, model, _ = job
+        doc = gltf_json(http, raw_url(NASA_REPO, commit, model))
+        deps = dependencies(doc, model, known, by_name)
+        if deps is None:
+            raise ValueError("a file it references is not in the repository")
+        name = PurePosixPath(model).stem
+        single = len(folders[folder]) == 1
+        title = folder if single else name  # folder names are written more carefully than file names
+        info = pages[folder]
+        previews = info.get("previews") or {}
+        thumbnail = previews.get(f"{name}.png".lower()) or (next(iter(previews.values()), None) if single else None)
+        if thumbnail is None and f"{posixpath.dirname(model)}/{name}.png" in known:
+            thumbnail = raw_url(NASA_REPO, commit, f"{posixpath.dirname(model)}/{name}.png")
+        stem = re.sub(r"[^A-Za-z0-9]+", "_", name).strip("_")
+        tags = [*_tag_words(title), *_tag_words(folder), "nasa"]
+        record = _record("nasa", "NASA", NASA_CREDIT, "models", "NASA 3D Resources", stem,
+                         info.get("page") or f"https://github.com/{NASA_REPO}/tree/{commit}/{quote(posixpath.dirname(model))}",
+                         github_downloads(NASA_REPO, commit, model, deps), doc, tags, thumbnail,
+                         {"folder": folder}, title=title, style="photoreal", description=info.get("description", ""))
+        if record:
+            record.update(licence=NASA_LICENCE, redistributable=True)
+            sizes = [record["size_x"], record["size_y"], record["size_z"]]
+            record["attributes"]["size_units"] = sizes if any(sizes) else None
+            record["attributes"]["scale"] = {"factor": None, "reference": NASA_SCALE}
+            record["size_x"] = record["size_y"] = record["size_z"] = record["size_source"] = None
+        return record
+
+    records = _measure_all(jobs, work, log, "NASA")
+    log(f"sozai: NASA: {len(records)} models from {len(folders)} folders")
+    return records
+
+
 LIBRARIES: dict[str, Callable[[Http, Callable[[str], None]], list[dict]]] = {
-    "kaykit": kaykit, "polygonalmind": polygonalmind, "opensourceavatars": opensourceavatars}
+    "kaykit": kaykit, "polygonalmind": polygonalmind, "opensourceavatars": opensourceavatars, "nasa": nasa}
 
 
 # --- shared steps ---

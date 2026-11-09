@@ -5,7 +5,7 @@
 <p>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-6b4dff?style=flat-square"></a>
   <a href="https://modelcontextprotocol.io"><img alt="MCP server" src="https://img.shields.io/badge/MCP-server-19b8d6?style=flat-square"></a>
-  <img alt="38,000 free assets" src="https://img.shields.io/badge/assets-38k_free-2ea44f?style=flat-square">
+  <img alt="39,000 free assets" src="https://img.shields.io/badge/assets-39k_free-2ea44f?style=flat-square">
   <img alt="Python 3.10 to 3.14" src="https://img.shields.io/badge/python-3.10–3.14-3776ab?style=flat-square&logo=python&logoColor=white">
   <img alt="macOS, Windows, Linux" src="https://img.shields.io/badge/macOS_·_Windows_·_Linux-555?style=flat-square">
   <a href="https://github.com/kanaworksai-hue/sozai-search-mcp/actions/workflows/test.yml"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/kanaworksai-hue/sozai-search-mcp/test.yml?style=flat-square&label=tests"></a>
@@ -20,7 +20,7 @@
 
 </div>
 
-**Sozai Search MCP** dá ao Claude Code, ao Claude Desktop, ao Cursor e a qualquer outro cliente [MCP](https://modelcontextprotocol.io) uma biblioteca de **38.000 assets 3D gratuitos**: modelos fotorrealistas, materiais PBR e HDRIs do Poly Haven e do ambientCG, modelos low-poly para jogos do Kenney, do Quaternius, do KayKit e da Polygonal Mind, avatares VRM com rig do Open Source Avatars, e listagens do Quixel Megascans. Peça "um caixote de madeira com menos de 1 m de altura" ou "uma pedra com musgo": o agente busca por palavras ou por significado, olha as prévias e coloca os arquivos no seu projeto, no tamanho real em metros. (*Sozai*, 素材, significa "materiais" em japonês.)
+**Sozai Search MCP** dá ao Claude Code, ao Claude Desktop, ao Cursor e a qualquer outro cliente [MCP](https://modelcontextprotocol.io) uma biblioteca de **39.000 assets 3D gratuitos**: modelos fotorrealistas, materiais PBR e HDRIs do Poly Haven e do ambientCG, modelos low-poly para jogos do Kenney, do Quaternius, do KayKit e da Polygonal Mind, avatares VRM com rig do Open Source Avatars, naves, rovers e telescópios da NASA, e listagens do Quixel Megascans. Peça "um caixote de madeira com menos de 1 m de altura" ou "uma pedra com musgo": o agente busca por palavras ou por significado, olha as prévias e coloca os arquivos no seu projeto, no tamanho real em metros. (*Sozai*, 素材, significa "materiais" em japonês.)
 
 O Sozai Search é um índice. Ele não hospeda nenhum arquivo de asset: cada resultado aponta para a fonte oficial, e os arquivos são baixados de lá pela sua própria máquina.
 
@@ -144,6 +144,7 @@ Os tamanhos são `[width, height, depth]` em metros, com a altura no eixo vertic
 | [KayKit](https://kaylousberg.com) | Packs low-poly para jogos: personagens, masmorra, móveis, restaurante, Halloween | CC0 | Baixados do GitHub |
 | [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release) | Objetos e cenários low-poly de mundos do metaverso (versões GLB de [ToxSam](https://github.com/ToxSam/cc0-models-Polygonal-Mind)) | CC0 | Baixados do GitHub |
 | [Open Source Avatars](https://www.opensourceavatars.com) | Avatares humanoides VRM com rig: 100Avatars da Polygonal Mind (também em versão voxel) e mais ([registro](https://github.com/ToxSam/open-source-avatars)) | CC0 | Baixados do Arweave |
+| [NASA 3D Resources](https://science.nasa.gov/3d-resources/) | Naves espaciais, rovers, telescópios, foguetes, asteroides e equipamento de astronauta ([repositório](https://github.com/nasa/NASA-3D-Resources)); sem tamanho em metros, porque os arquivos não usam uma unidade comum | [Diretrizes de mídia da NASA](https://www.nasa.gov/nasa-brand-center/images-and-media/) | Baixados do GitHub |
 | [Quixel Megascans](https://www.fab.com/sellers/Quixel) | Scans fotorrealistas | Fab Standard License | Não podem ser baixados pelo Sozai Search: os resultados levam ao Fab |
 
 Os Megascans são gratuitos no Fab: resgate-os com uma conta Epic e depois baixe. Você pode usá-los nos seus projetos, mas não pode redistribuir os arquivos. As três dimensões de uma listagem não vêm em uma ordem fixa de eixos, por isso são informadas como `dims_m` (a maior primeiro) e ficam fora dos filtros de altura.
@@ -195,7 +196,7 @@ O Sozai Search só se conecta via https, e apenas às bibliotecas acima, ao GitH
 <details>
 <summary><b>Posso usar os assets em um jogo ou vídeo comercial?</b></summary>
 
-Os assets do Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind e Open Source Avatars são CC0: livres para qualquer uso, sem necessidade de crédito (mesmo assim o Sozai Search escreve o `CREDITS.md`, e o Poly Haven pede "Powered by Poly Haven" onde você exibir os assets deles pela API). Os Megascans estão sob a Fab Standard License: use nos seus projetos, mas não redistribua os arquivos. Cada resultado informa a sua licença.
+Os assets do Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind e Open Source Avatars são CC0: livres para qualquer uso, sem necessidade de crédito (mesmo assim o Sozai Search escreve o `CREDITS.md`, e o Poly Haven pede "Powered by Poly Haven" onde você exibir os assets deles pela API). Os Megascans estão sob a Fab Standard License: use nos seus projetos, mas não redistribua os arquivos. Pelas diretrizes de mídia da NASA, os modelos dela não estão sujeitos a direitos autorais nos EUA: dê crédito à NASA, não sugira que a NASA endossa você e peça permissão à NASA antes de usar comercialmente os logotipos ou insígnias dela. Cada resultado informa a sua licença.
 </details>
 
 <details>
@@ -249,7 +250,7 @@ src/sozai/
   bundle.py        the published data zip (pack / install)
   fetch.py         downloads, packing .glb, credits
   catalog.py       kit ingest (Kenney, Quaternius); scale.py calibration, thumbs.py previews
-  repos.py         libraries on GitHub (KayKit, Polygonal Mind, Open Source Avatars)
+  repos.py         libraries on GitHub (KayKit, Polygonal Mind, Open Source Avatars, NASA)
   sources/         Poly Haven, ambientCG, Megascans
 ```
 
@@ -260,9 +261,9 @@ Os mantenedores geram uma release de dados com `sozai build --live`, `sozai inge
 - **Este projeto:** [MIT](LICENSE), © 東京AI映像合同会社 (Tokyo AI Visuals LLC).
 - **Assets:** cada asset mantém a sua própria licença, informada em cada resultado. O Sozai Search não distribui nenhum arquivo de asset. Os dados publicados trazem o seu próprio `NOTICE.txt`.
 - **Marca:** o nome KanaWorks_AI, o logo e a personagem Kana são © 東京AI映像合同会社 e **não** são cobertos pela licença MIT. Veja [docs/brand](docs/brand/README.md).
-- **Construído com:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [KayKit](https://kaylousberg.com), [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release), [Open Source Avatars](https://www.opensourceavatars.com), o [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) e o [Model Context Protocol](https://modelcontextprotocol.io).
+- **Construído com:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [KayKit](https://kaylousberg.com), [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release), [Open Source Avatars](https://www.opensourceavatars.com), [NASA](https://science.nasa.gov/3d-resources/), o [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) e o [Model Context Protocol](https://modelcontextprotocol.io).
 
-Este é um projeto independente, sem afiliação nem endosso da Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind, Open Source Avatars, Google ou Anthropic.
+Este é um projeto independente, sem afiliação nem endosso da Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind, Open Source Avatars, NASA, Google ou Anthropic.
 
 <br>
 

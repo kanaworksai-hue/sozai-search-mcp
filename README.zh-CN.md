@@ -5,7 +5,7 @@
 <p>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-6b4dff?style=flat-square"></a>
   <a href="https://modelcontextprotocol.io"><img alt="MCP server" src="https://img.shields.io/badge/MCP-server-19b8d6?style=flat-square"></a>
-  <img alt="38,000 free assets" src="https://img.shields.io/badge/assets-38k_free-2ea44f?style=flat-square">
+  <img alt="39,000 free assets" src="https://img.shields.io/badge/assets-39k_free-2ea44f?style=flat-square">
   <img alt="Python 3.10 to 3.14" src="https://img.shields.io/badge/python-3.10–3.14-3776ab?style=flat-square&logo=python&logoColor=white">
   <img alt="macOS, Windows, Linux" src="https://img.shields.io/badge/macOS_·_Windows_·_Linux-555?style=flat-square">
   <a href="https://github.com/kanaworksai-hue/sozai-search-mcp/actions/workflows/test.yml"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/kanaworksai-hue/sozai-search-mcp/test.yml?style=flat-square&label=tests"></a>
@@ -20,7 +20,7 @@
 
 </div>
 
-**Sozai Search MCP** 给 Claude Code、Claude Desktop、Cursor 以及任何 [MCP](https://modelcontextprotocol.io) 客户端配上一个收录 **38,000 个免费 3D 素材**的素材库：来自 Poly Haven 和 ambientCG 的写实模型、PBR 材质和 HDRI，来自 Kenney、Quaternius、KayKit 和 Polygonal Mind 的低多边形游戏模型，来自 Open Source Avatars 的带骨骼 VRM 角色，以及 Quixel Megascans 的素材条目。说一句“来个不到 1 米高的木箱”或“一块长满青苔的石头”，智能体就会按关键词或语义搜索，看过预览图，再把文件放进你的项目，尺寸就是以米为单位的真实大小。（*Sozai* 是日语“素材”的读音。）
+**Sozai Search MCP** 给 Claude Code、Claude Desktop、Cursor 以及任何 [MCP](https://modelcontextprotocol.io) 客户端配上一个收录 **39,000 个免费 3D 素材**的素材库：来自 Poly Haven 和 ambientCG 的写实模型、PBR 材质和 HDRI，来自 Kenney、Quaternius、KayKit 和 Polygonal Mind 的低多边形游戏模型，来自 Open Source Avatars 的带骨骼 VRM 角色，NASA 的航天器、探测车和望远镜，以及 Quixel Megascans 的素材条目。说一句“来个不到 1 米高的木箱”或“一块长满青苔的石头”，智能体就会按关键词或语义搜索，看过预览图，再把文件放进你的项目，尺寸就是以米为单位的真实大小。（*Sozai* 是日语“素材”的读音。）
 
 Sozai Search 只是一个索引，本身不托管任何素材文件：每条结果都指向官方来源，文件由你自己的电脑从那里下载。
 
@@ -144,6 +144,7 @@ claude mcp add sozai -s project -- uv run --directory /path/to/sozai-search-mcp 
 | [KayKit](https://kaylousberg.com) | 低多边形游戏素材包：角色、地牢、家具、餐厅、万圣节等 | CC0 | 从 GitHub 下载 |
 | [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release) | 来自元宇宙场景的低多边形道具和场景（GLB 版由 [ToxSam](https://github.com/ToxSam/cc0-models-Polygonal-Mind) 转换） | CC0 | 从 GitHub 下载 |
 | [Open Source Avatars](https://www.opensourceavatars.com) | 带骨骼的人形 VRM 角色：Polygonal Mind 的 100Avatars（含体素版）等（[注册表](https://github.com/ToxSam/open-source-avatars)） | CC0 | 从 Arweave 下载 |
+| [NASA 3D Resources](https://science.nasa.gov/3d-resources/) | 航天器、探测车、望远镜、火箭、小行星和宇航员装备（[仓库](https://github.com/nasa/NASA-3D-Resources)）；各文件单位不统一，所以没有以米为单位的尺寸 | [NASA 媒体使用规定](https://www.nasa.gov/nasa-brand-center/images-and-media/) | 从 GitHub 下载 |
 | [Quixel Megascans](https://www.fab.com/sellers/Quixel) | 写实扫描 | Fab Standard License | Sozai Search 无法下载：结果会链接到 Fab |
 
 Megascans 在 Fab 上免费：用 Epic 账号领取后即可下载。可以用在你的项目里，但不能再分发文件。条目里的三个尺寸没有固定的轴顺序，所以以 `dims_m`（从大到小）给出，也不参与高度筛选。
@@ -195,7 +196,7 @@ Sozai Search 只通过 https 连接上面这些素材库、GitHub（数据发布
 <details>
 <summary><b>素材可以用在商业游戏或视频里吗？</b></summary>
 
-Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind 和 Open Source Avatars 的素材都是 CC0：任何用途都免费，不需要署名（Sozai Search 仍会写 `CREDITS.md`；另外，通过 API 展示 Poly Haven 素材的地方，Poly Haven 希望注明“Powered by Poly Haven”）。Megascans 适用 Fab Standard License：可以用在你的项目里，但不能再分发文件。每条结果都会注明许可证。
+Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind 和 Open Source Avatars 的素材都是 CC0：任何用途都免费，不需要署名（Sozai Search 仍会写 `CREDITS.md`；另外，通过 API 展示 Poly Haven 素材的地方，Poly Haven 希望注明“Powered by Poly Haven”）。Megascans 适用 Fab Standard License：可以用在你的项目里，但不能再分发文件。按 NASA 的媒体使用规定，NASA 的模型在美国不受版权保护：需要注明来自 NASA，不能暗示 NASA 背书，商用 NASA 的标志或徽章要先取得 NASA 许可。每条结果都会注明许可证。
 </details>
 
 <details>
@@ -249,7 +250,7 @@ src/sozai/
   bundle.py        发布数据的 zip（打包 / 安装）
   fetch.py         下载、打包 .glb、署名
   catalog.py       素材包导入（Kenney、Quaternius）；scale.py 尺寸校准，thumbs.py 预览图
-  repos.py         GitHub 上的素材库（KayKit、Polygonal Mind、Open Source Avatars）
+  repos.py         GitHub 上的素材库（KayKit、Polygonal Mind、Open Source Avatars、NASA）
   sources/         Poly Haven、ambientCG、Megascans
 ```
 
@@ -260,9 +261,9 @@ src/sozai/
 - **本项目：** [MIT](LICENSE)，© 東京AI映像合同会社（Tokyo AI Visuals LLC）。
 - **素材：** 每个素材保留各自的许可证，在每条结果里注明。Sozai Search 不分发任何素材文件。发布的数据自带 `NOTICE.txt`。
 - **品牌：** KanaWorks_AI 名称、logo 和 Kana 形象版权归東京AI映像合同会社所有，**不在** MIT 授权范围内。详见 [docs/brand](docs/brand/README.md)。
-- **基于：** [Poly Haven](https://polyhaven.com)（Powered by Poly Haven）、[ambientCG](https://ambientcg.com)、[Kenney](https://kenney.nl)、[Quaternius](https://quaternius.com)、[KayKit](https://kaylousberg.com)、[Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release)、[Open Source Avatars](https://www.opensourceavatars.com)、[EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) 和 [Model Context Protocol](https://modelcontextprotocol.io)。
+- **基于：** [Poly Haven](https://polyhaven.com)（Powered by Poly Haven）、[ambientCG](https://ambientcg.com)、[Kenney](https://kenney.nl)、[Quaternius](https://quaternius.com)、[KayKit](https://kaylousberg.com)、[Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release)、[Open Source Avatars](https://www.opensourceavatars.com)、[NASA](https://science.nasa.gov/3d-resources/)、[EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) 和 [Model Context Protocol](https://modelcontextprotocol.io)。
 
-本项目是独立项目，与 Epic Games、Quixel、Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind、Open Source Avatars、Google、Anthropic 都没有关联，也未获其背书。
+本项目是独立项目，与 Epic Games、Quixel、Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind、Open Source Avatars、NASA、Google、Anthropic 都没有关联，也未获其背书。
 
 <br>
 

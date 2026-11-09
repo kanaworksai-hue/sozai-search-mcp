@@ -44,13 +44,16 @@ get it, plus search vectors computed by Sozai Search. It contains no asset files
   github.com/ToxSam/cc0-models-Polygonal-Mind) records were measured from their CC0 files on GitHub.
 - Open Source Avatars records (https://www.opensourceavatars.com, registry at
   github.com/ToxSam/open-source-avatars) were measured from the CC0 VRM files on Arweave.
+- NASA 3D Resources records were measured from the files at github.com/nasa/NASA-3D-Resources,
+  with descriptions and preview links from science.nasa.gov/3d-resources. Courtesy NASA; used
+  under NASA's media usage guidelines (https://www.nasa.gov/nasa-brand-center/images-and-media/).
 - Quixel Megascans records describe listings on Fab (https://www.fab.com). The assets
   themselves are on Fab under the Fab Standard License and are never included.
 - Sozai Search's own fields (measured sizes, scale calibration, search text) and the vectors
   are released under the MIT licence, like its code.
 
 Not affiliated with or endorsed by Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius,
-KayKit, Polygonal Mind or Open Source Avatars.
+KayKit, Polygonal Mind, Open Source Avatars or NASA.
 """
 KIT_SOURCES = ("kenney", "quaternius")
 
