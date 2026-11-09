@@ -18,6 +18,15 @@ with the code release that first expects them.
   measured from the files on Arweave. `fetch_asset` delivers one `.vrm`; FBX versions are listed
   where the registry has them. Avatars kept only on public IPFS gateways and the CC-BY collection
   are left out. `sozai ingest opensourceavatars` (maintainers).
+- New library: NASA 3D Resources, 250 models of spacecraft, rovers, telescopes, rockets,
+  asteroids and astronaut gear from NASA's GitHub repository, with descriptions and small previews
+  from science.nasa.gov (read once per model page at ingest time, a second apart). They are under
+  NASA's media usage guidelines rather than CC0: credit NASA, don't imply endorsement, ask before
+  using NASA logos commercially; results show the licence. NASA files share no unit, so these
+  models report no size in metres (the file's own units are in `attributes.size_units`).
+  Folders with only `.blend`, `.3ds` or split `.7z` files are left out. `sozai ingest nasa`.
+- Results show the licence of every asset that is not CC0 (before: only of assets that may not be
+  redistributed).
 - `view_assets` shrinks previews over 400 KB when Pillow is installed, and links them otherwise.
 
 ## 0.1.0 (2026-11-08)

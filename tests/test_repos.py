@@ -1,6 +1,7 @@
-"""Libraries on GitHub (KayKit, Polygonal Mind): reading, measuring, variants and fetching, offline."""
+"""Libraries on GitHub (KayKit, Polygonal Mind, Open Source Avatars, NASA): reading, measuring, variants and fetching, offline."""
 import json
 import struct
+from urllib.parse import unquote
 
 import pytest
 from test_fetch import CUBE_DOC
@@ -38,7 +39,7 @@ class FakeGitHub:
                 return json.dumps({"tree": [{"path": p, "type": "blob"} for p in files]}).encode()
             prefix = f"{repos.RAW}/{repo}/{SHA}/"
             if url.startswith(prefix):
-                data = files[url[len(prefix):].replace("%20", " ")]
+                data = files[unquote(url[len(prefix):])]
                 if headers and "Range" in headers:
                     self.ranges.append(headers["Range"])
                     start, end = headers["Range"].removeprefix("bytes=").split("-")
@@ -252,3 +253,70 @@ def test_fetch_keeps_an_avatar_as_one_vrm(tmp_path, monkeypatch):
     out = fetch.fetch_asset(asset, str(tmp_path / "project"))
     assert out["files"] == ["031_Devil.vrm"] and any("VRM" in note for note in out["notes"])
     assert (tmp_path / "project" / "031_Devil.vrm").read_bytes() == model
+
+
+NASA_PAGE = """<html><head>
+<meta property="og:description" content="Aqua carries six instruments to observe the Earth&#039;s oceans" />
+<meta property="og:image" content="https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/aqua-(a)/Aqua%20(A).png/jcr:content/renditions/cq5dam.web.1280.1280.png" />
+</head><body><a href="https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/aqua-(a)/Aqua%20(A).glb">GLB</a></body></html>"""
+
+
+def test_nasa_reads_pages_and_reports_no_size(monkeypatch, tmp_path):
+    import urllib.error
+
+    from sozai.search import compact
+
+    model = glb(cube(), bytes(168) + png(4, 4))
+    files = {"3D Models/Aqua (A)/Aqua (A).glb": model, "3D Models/Aqua (A)/Aqua (A).png": png(8, 8),
+             "3D Models/Stardust/Stardust.glb": model, "3D Models/Stardust/Stardust capsule.glb": model,
+             "3D Models/Stardust/Stardust capsule.png": png(8, 8),
+             "3D Models/Curiosity Rover (MSL)/Curiosity Rover (MSL).blend": b"blend",
+             "3D Printing/Aqua/Aqua.stl": b"stl"}
+    server = FakeGitHub({repos.NASA_REPO: files})
+    pages = []
+
+    def get(self, url, headers=None):
+        if url.startswith(repos.NASA_SITE):
+            pages.append(url)
+            if url == repos.NASA_SITE + "aqua-a/":
+                return NASA_PAGE.encode()
+            raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)
+        return server.get(url, headers)
+
+    monkeypatch.setattr(Http, "get", get)
+    monkeypatch.setattr(repos, "SITE_PAUSE", 0)
+    monkeypatch.setenv("SOZAI_HOME", str(tmp_path))
+    logs = []
+    report = repos.ingest("nasa", log=logs.append, thumbnails=False)
+    assert report["models"] == 3 and sorted(pages) == [repos.NASA_SITE + "aqua-a/", repos.NASA_SITE + "stardust/"]
+    assert any("Curiosity Rover (MSL)" in line for line in logs)  # .blend only: left out, and said so
+    rows = {r["source_id"]: r for r in catalog.load_catalogs()["nasa"]}
+    assert sorted(rows) == ["models/Aqua_A", "models/Stardust", "models/Stardust_capsule"]
+    aqua = rows["models/Aqua_A"]
+    assert aqua["title"] == "Aqua (A)" and aqua["url"] == repos.NASA_SITE + "aqua-a/"
+    assert aqua["description"] == "Aqua carries six instruments to observe the Earth's oceans."
+    assert aqua["thumbnail_url"] == ("https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/"
+                                     "aqua-(a)/Aqua%20(A).png" + repos.NASA_THUMB)
+    # NASA files share no unit: the size stays in the file's units and none is reported in metres
+    assert aqua["size_x"] is None and aqua["attributes"]["size_units"] == [0.5, 0.5, 0.5]
+    assert aqua["licence"] == repos.NASA_LICENCE and aqua["redistributable"] and "endorsement" in aqua["credit"]
+    assert "nasa" in aqua["tags"] and compact(aqua)["licence"] == repos.NASA_LICENCE
+    capsule, stardust = rows["models/Stardust_capsule"], rows["models/Stardust"]
+    assert capsule["title"] == "Stardust capsule" and capsule["url"].startswith("https://github.com/nasa/")
+    assert capsule["thumbnail_url"] == repos.raw_url(repos.NASA_REPO, SHA, "3D Models/Stardust/Stardust capsule.png")
+    assert stardust["thumbnail_url"] is None  # rendered with Blender at ingest time
+    line = how_to_get(aqua)
+    assert "fetch_asset" in line and "endorsement" in line and "real object" in line
+    assert repos._nasa_slug("Active Cavity Irradiance Monitor Satellite (AcrimSAT) (A)") == \
+        "active-cavity-irradiance-monitor-satellite-acrimsat-a"
+    assert repos._nasa_slug("70-meter Dish") == "70-meter-dish"
+
+    def download(url, md5=None):
+        path = tmp_path / "cache" / url.rsplit("/", 1)[1]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(server.get(url))
+        return path
+
+    monkeypatch.setattr(fetch, "download", download)
+    out = fetch.fetch_asset(aqua, str(tmp_path / "project"))
+    assert out["files"] == ["Aqua_A.glb"] and any("not scaled to metres" in note for note in out["notes"])

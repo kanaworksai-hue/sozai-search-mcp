@@ -307,5 +307,34 @@
   "expect": [
    "wolf"
   ]
+ },
+ {
+  "query": "a satellite that measures ocean salinity",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "aquarius"
+  ]
+ },
+ {
+  "query": "the rocket that took astronauts to the Moon",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "saturn"
+  ]
+ },
+ {
+  "query": "火星の探査車",
+  "filters": {
+   "kind": "model"
+  },
+  "expect": [
+   "rover",
+   "perseverance",
+   "opportunity"
+  ]
  }
 ]

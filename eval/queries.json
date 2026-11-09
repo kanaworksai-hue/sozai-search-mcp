@@ -799,5 +799,47 @@
   "expect": [
    "pirate"
   ]
+ },
+ {
+  "query": "space shuttle",
+  "filters": {
+   "source": "nasa"
+  },
+  "expect": [
+   "shuttle"
+  ]
+ },
+ {
+  "query": "hubble",
+  "filters": {
+   "source": "nasa"
+  },
+  "expect": [
+   "hubble"
+  ]
+ },
+ {
+  "query": "mars rover",
+  "filters": {
+   "source": "nasa"
+  },
+  "expect": [
+   "rover",
+   "perseverance",
+   "opportunity"
+  ]
+ },
+ {
+  "query": "spacesuit",
+  "alternatives": [
+   "space suit"
+  ],
+  "filters": {
+   "source": "nasa"
+  },
+  "expect": [
+   "suit",
+   "extravehicular"
+  ]
  }
 ]

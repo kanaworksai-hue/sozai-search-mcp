@@ -264,7 +264,7 @@ def compact(asset: dict) -> dict:
         out["dims_m"] = dims  # metres, largest first, which axis is up unknown
     if out.get("style") == "photoreal":
         out.pop("style")  # the default; only stylized / lowpoly are worth the tokens
-    if not asset.get("redistributable"):
+    if asset.get("licence") != "CC0-1.0":  # worth the tokens: terms beyond CC0 apply
         out["licence"] = asset.get("licence")
     return out
 
@@ -301,6 +301,13 @@ def how_to_get(asset: dict) -> str:
         if others:
             line += ". Also as " + ", ".join(f"{k.upper()}: {u}" for k, u in others.items())
         return line + "."
+    if asset["source"] == "nasa":
+        files = downloads.get("files") or {}
+        return (f"NASA, on GitHub ({downloads.get('repo')}): call fetch_asset, or download "
+                + ", ".join(files.values()) + ". No size in metres: NASA files use no common unit (size_units "
+                "in attributes are the file's own), so scale it against the real object. NASA media usage "
+                "guidelines: credit NASA, do not imply NASA endorsement, and NASA logos or insignia on a model "
+                "need NASA's permission for commercial use.")
     if asset["source"] == "megascans":
         return (f"Free on Fab: open {downloads.get('fab_listing') or asset.get('url')}, sign in with an Epic account, "
                 "add it to your library (free), then download it there (choose the format: FBX/glTF for "

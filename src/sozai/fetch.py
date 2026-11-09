@@ -249,7 +249,7 @@ def _kit(asset: dict, folder: Path, resolution: str, fmt: str, quality: str) -> 
 
 
 def _repo(asset: dict, folder: Path, resolution: str, fmt: str, quality: str) -> tuple[Path, list[Path], list[str]]:
-    """KayKit, Polygonal Mind: the model's files from GitHub, at the commit the record was read at.
+    """KayKit, Polygonal Mind, NASA: the model's files from GitHub, at the commit the record was read at.
     Open Source Avatars: one .vrm (or .glb) from Arweave."""
     from sozai.repos import materialise
 
@@ -293,7 +293,9 @@ def _scale_to_metres(asset: dict, main: Path, notes: list[str]) -> None:
         else:
             notes.append(f"not rescaled: multiply this {main.suffix} by {factor} for real size in metres")
     elif factor is None and (asset.get("attributes") or {}).get("size_units"):
-        notes.append("this kit has no real-world scale reference; size it by eye")
+        reference = ((asset.get("attributes") or {}).get("scale") or {}).get("reference") or ""
+        notes.append(f"not scaled to metres: {reference}" if asset["source"] == "nasa"
+                     else "this kit has no real-world scale reference; size it by eye")
 
 
 def _kit_files(asset: dict, folder: Path, fmt: str) -> tuple[Path, list[Path], list[str]]:
@@ -334,7 +336,7 @@ def _kit_files(asset: dict, folder: Path, fmt: str) -> tuple[Path, list[Path], l
 
 
 HANDLERS = {"polyhaven": _polyhaven, "ambientcg": _ambientcg, "kenney": _kit, "quaternius": _kit,
-            "kaykit": _repo, "polygonalmind": _repo, "opensourceavatars": _repo}
+            "kaykit": _repo, "polygonalmind": _repo, "opensourceavatars": _repo, "nasa": _repo}
 
 
 def _publish(stage: Path, folder: Path) -> None:
