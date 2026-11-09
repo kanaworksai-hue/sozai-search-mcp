@@ -65,14 +65,14 @@ class Http:
     def get_json(self, url: str):
         return json.loads(self.get(url))
 
-    def get(self, url: str) -> bytes:
+    def get(self, url: str, headers: dict | None = None) -> bytes:
         for attempt in range(self.retries):
             wait = self.pause - (time.monotonic() - self._last)
             if wait > 0:
                 time.sleep(wait)
             self._last = time.monotonic()
             try:
-                with open_url(url, self.timeout, {"Accept": "application/json"}) as response:
+                with open_url(url, self.timeout, {"Accept": "application/json", **(headers or {})}) as response:
                     return response.read()
             except urllib.error.HTTPError as error:
                 if error.code < 500 and error.code != 429:

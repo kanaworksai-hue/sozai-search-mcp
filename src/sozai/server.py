@@ -18,7 +18,8 @@ from sozai.protocol import StdioServer, Tool, ToolError
 INSTRUCTIONS = """\
 Sozai Search finds free 3D assets with real-world sizes in metres: photoreal models, PBR materials and
 HDRIs from Poly Haven and ambientCG (CC0); low-poly game models, many rigged and animated, from
-Kenney and Quaternius kits (CC0); and Quixel Megascans scans (free on Fab, Fab Standard License).
+Kenney, Quaternius, KayKit and Polygonal Mind (CC0); and Quixel Megascans scans (free on Fab, Fab
+Standard License).
 
 How to search well:
 - Write `query` as 1-4 English keywords for the thing itself ("wooden crate", "red brick", "sunset sky").
@@ -45,7 +46,7 @@ Credit: when you show or use Poly Haven assets, say "Powered by Poly Haven" (the
 
 KINDS = ["model", "material", "hdri", "decal", "atlas", "texture", "substance", "terrain", "brush"]
 STYLES = ["photoreal", "stylized", "lowpoly"]
-SOURCES = ["polyhaven", "ambientcg", "kenney", "quaternius", "megascans"]
+SOURCES = ["polyhaven", "ambientcg", "kenney", "quaternius", "kaykit", "polygonalmind", "megascans"]
 
 
 def _one_or_many(values: list[str], description: str) -> dict:
@@ -283,9 +284,10 @@ def main(argv: list[str] | None = None) -> None:
     fetch.add_argument("--quality", choices=["web", "game", "film"], default="game")
     fetch.add_argument("--resolution", choices=["1k", "2k", "4k", "8k"])
     fetch.add_argument("--format", choices=["glb", "gltf"], default="glb")
-    ingest = commands.add_parser("ingest", help="catalog a folder of kit zips (kenney, quaternius), then rebuild")
-    ingest.add_argument("source", choices=["kenney", "quaternius"])
-    ingest.add_argument("folder")
+    ingest = commands.add_parser("ingest", help="catalog a folder of kit zips (kenney, quaternius) or a library "
+                                 "on GitHub (maintainers: kaykit, polygonalmind), then rebuild")
+    ingest.add_argument("source", choices=["kenney", "quaternius", "kaykit", "polygonalmind"])
+    ingest.add_argument("folder", nargs="?", help="the folder of kit zips (kenney, quaternius only)")
     ingest.add_argument("--no-thumbnails", action="store_true",
                         help="skip rendering previews with Blender for models that ship without one")
     embed = commands.add_parser("embed", help="maintainers: compute asset vectors with MLX (needs sozai-search-mcp[embed])")
@@ -337,10 +339,16 @@ def main(argv: list[str] | None = None) -> None:
         semantic.install_model(log=lambda m: print(m, file=sys.stderr))
         _print({"model": str(semantic.model_dir()), "status": semantic.status() or "ready"})
     elif args.command == "ingest":
+        from sozai import repos
         from sozai.catalog import ingest as ingest_kits
 
-        report = ingest_kits(args.source, args.folder, log=lambda m: print(m, file=sys.stderr),
-                             thumbnails=not args.no_thumbnails)
+        log = lambda m: print(m, file=sys.stderr)  # noqa: E731
+        if args.source in repos.LIBRARIES:
+            report = repos.ingest(args.source, log=log, thumbnails=not args.no_thumbnails)
+        elif not args.folder:
+            sys.exit(f"sozai ingest {args.source} needs the folder of kit zips")
+        else:
+            report = ingest_kits(args.source, args.folder, log=log, thumbnails=not args.no_thumbnails)
         report["index"] = update_index()
         _print(report)
 

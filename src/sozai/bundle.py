@@ -22,7 +22,7 @@ from pathlib import Path
 
 from sozai import __version__, index, paths, semantic
 
-DATA_VERSION = "2026.11.08"
+DATA_VERSION = "2026.11.09"
 DATA_URL = f"https://github.com/kanaworksai-hue/sozai-search-mcp/releases/download/data-{DATA_VERSION}/sozai-data-{DATA_VERSION}.zip"
 RECORDS = "records.jsonl.gz"
 VECTORS = "vectors.npz"
@@ -40,12 +40,15 @@ get it, plus search vectors computed by Sozai Search. It contains no asset files
   terms. Poly Haven keeps its rights in that data. Powered by Poly Haven.
 - ambientCG records come from the ambientCG API (https://ambientcg.com); assets CC0.
 - Kenney and Quaternius records were measured from their CC0 kits by Sozai Search.
+- KayKit (Kay Lousberg, github.com/KayKit-Game-Assets) and Polygonal Mind (GLB versions at
+  github.com/ToxSam/cc0-models-Polygonal-Mind) records were measured from their CC0 files on GitHub.
 - Quixel Megascans records describe listings on Fab (https://www.fab.com). The assets
   themselves are on Fab under the Fab Standard License and are never included.
 - Sozai Search's own fields (measured sizes, scale calibration, search text) and the vectors
   are released under the MIT licence, like its code.
 
-Not affiliated with or endorsed by Epic Games, Quixel, Poly Haven, ambientCG, Kenney or Quaternius.
+Not affiliated with or endorsed by Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius,
+KayKit or Polygonal Mind.
 """
 KIT_SOURCES = ("kenney", "quaternius")
 

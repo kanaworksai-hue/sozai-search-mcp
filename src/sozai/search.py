@@ -290,6 +290,10 @@ def how_to_get(asset: dict) -> str:
             return f"Part of the {kit} kit, which is on this machine: call fetch_asset."
         return (f"Part of the {kit} kit. Download the kit from {downloads.get('kit_page')}, then run "
                 f"`sozai ingest {asset['source']} <folder>`; fetch_asset works after that.")
+    if asset["source"] in ("kaykit", "polygonalmind"):
+        files = downloads.get("files") or {}
+        return (f"CC0, on GitHub ({downloads.get('repo')}): call fetch_asset, or download these "
+                f"{len(files)} file(s) keeping their relative paths: " + ", ".join(files.values()))
     if asset["source"] == "megascans":
         return (f"Free on Fab: open {downloads.get('fab_listing') or asset.get('url')}, sign in with an Epic account, "
                 "add it to your library (free), then download it there (choose the format: FBX/glTF for "

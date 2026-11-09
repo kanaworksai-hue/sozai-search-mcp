@@ -5,7 +5,7 @@
 <p>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-6b4dff?style=flat-square"></a>
   <a href="https://modelcontextprotocol.io"><img alt="MCP server" src="https://img.shields.io/badge/MCP-server-19b8d6?style=flat-square"></a>
-  <img alt="36,000 free assets" src="https://img.shields.io/badge/assets-36k_free-2ea44f?style=flat-square">
+  <img alt="38,000 free assets" src="https://img.shields.io/badge/assets-38k_free-2ea44f?style=flat-square">
   <img alt="Python 3.10 to 3.14" src="https://img.shields.io/badge/python-3.10–3.14-3776ab?style=flat-square&logo=python&logoColor=white">
   <img alt="macOS, Windows, Linux" src="https://img.shields.io/badge/macOS_·_Windows_·_Linux-555?style=flat-square">
   <a href="https://github.com/kanaworksai-hue/sozai-search-mcp/actions/workflows/test.yml"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/kanaworksai-hue/sozai-search-mcp/test.yml?style=flat-square&label=tests"></a>
@@ -20,7 +20,7 @@
 
 </div>
 
-**Sozai Search MCP** gives Claude Code, Claude Desktop, Cursor and any other [MCP](https://modelcontextprotocol.io) client a library of **36,000 free 3D assets**: photoreal models, PBR materials and HDRIs from Poly Haven and ambientCG, low-poly game models from Kenney and Quaternius, and Quixel Megascans listings. Ask for "a wooden crate under 1 m tall" or "a mossy rock"; the agent searches by words or by meaning, looks at the previews, and drops the files into your project, at their real size in metres. (*Sozai*, 素材, means "materials" in Japanese.)
+**Sozai Search MCP** gives Claude Code, Claude Desktop, Cursor and any other [MCP](https://modelcontextprotocol.io) client a library of **38,000 free 3D assets**: photoreal models, PBR materials and HDRIs from Poly Haven and ambientCG, low-poly game models from Kenney, Quaternius, KayKit and Polygonal Mind, and Quixel Megascans listings. Ask for "a wooden crate under 1 m tall" or "a mossy rock"; the agent searches by words or by meaning, looks at the previews, and drops the files into your project, at their real size in metres. (*Sozai*, 素材, means "materials" in Japanese.)
 
 Sozai Search is an index. It hosts no asset files: every result points at the official source, and files are downloaded from there by your own machine.
 
@@ -141,6 +141,8 @@ Sizes are `[width, height, depth]` in metres, height being the up axis. Material
 | [ambientCG](https://ambientcg.com) | Materials, HDRIs, decals, models | CC0 | Downloaded from ambientCG |
 | [Kenney](https://kenney.nl) | Low-poly game kits | CC0 | From kit zips you download ([below](#-kit-libraries-kenney-quaternius)) |
 | [Quaternius](https://quaternius.com) | Low-poly models, many rigged and animated | CC0 | From kit zips you download |
+| [KayKit](https://kaylousberg.com) | Low-poly game packs: characters, dungeon, furniture, restaurant, Halloween | CC0 | Downloaded from GitHub |
+| [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release) | Low-poly props and scenery from metaverse worlds (GLB versions by [ToxSam](https://github.com/ToxSam/cc0-models-Polygonal-Mind)) | CC0 | Downloaded from GitHub |
 | [Quixel Megascans](https://www.fab.com/sellers/Quixel) | Photoreal scans | Fab Standard License | Not downloadable by Sozai Search: results link to Fab |
 
 Megascans are free on Fab: claim them with an Epic account, then download. You may use them in your projects but not redistribute the files. A listing's three dimensions come in no fixed axis order, so they are reported as `dims_m` (largest first) and kept out of height filters.
@@ -192,7 +194,7 @@ Sozai Search only connects over https, to the libraries above, GitHub (the data 
 <details>
 <summary><b>Can I use the assets in a commercial game or video?</b></summary>
 
-Poly Haven, ambientCG, Kenney and Quaternius assets are CC0: free for any use, no credit required (Sozai Search still writes `CREDITS.md`, and Poly Haven asks for "Powered by Poly Haven" where you show their assets through the API). Megascans are under the Fab Standard License: use them in your projects, but don't redistribute the files. Every result states its licence.
+Poly Haven, ambientCG, Kenney, Quaternius, KayKit and Polygonal Mind assets are CC0: free for any use, no credit required (Sozai Search still writes `CREDITS.md`, and Poly Haven asks for "Powered by Poly Haven" where you show their assets through the API). Megascans are under the Fab Standard License: use them in your projects, but don't redistribute the files. Every result states its licence.
 </details>
 
 <details>
@@ -246,6 +248,7 @@ src/sozai/
   bundle.py        the published data zip (pack / install)
   fetch.py         downloads, packing .glb, credits
   catalog.py       kit ingest (Kenney, Quaternius); scale.py calibration, thumbs.py previews
+  repos.py         libraries on GitHub (KayKit, Polygonal Mind)
   sources/         Poly Haven, ambientCG, Megascans
 ```
 
@@ -256,9 +259,9 @@ Maintainers make a data release with `sozai build --live`, `sozai ingest ...`, `
 - **This project:** [MIT](LICENSE), © 東京AI映像合同会社 (Tokyo AI Visuals LLC).
 - **Assets:** each asset keeps its own licence, given per result. Sozai Search distributes no asset files. The published data carries its own `NOTICE.txt`.
 - **Brand:** the KanaWorks_AI name, logo and the Kana character are © 東京AI映像合同会社 and are **not** covered by the MIT license. See [docs/brand](docs/brand/README.md).
-- **Built on:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) and the [Model Context Protocol](https://modelcontextprotocol.io).
+- **Built on:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [KayKit](https://kaylousberg.com), [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release), [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) and the [Model Context Protocol](https://modelcontextprotocol.io).
 
-This is an independent project. It is not affiliated with or endorsed by Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, Google or Anthropic.
+This is an independent project. It is not affiliated with or endorsed by Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind, Google or Anthropic.
 
 <br>
 

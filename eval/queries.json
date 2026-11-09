@@ -681,5 +681,83 @@
   "expect": [
    "japan"
   ]
+ },
+ {
+  "query": "skeleton warrior",
+  "filters": {
+   "source": "kaykit"
+  },
+  "expect": [
+   "skeleton"
+  ]
+ },
+ {
+  "query": "kitchen counter",
+  "filters": {
+   "source": "kaykit"
+  },
+  "expect": [
+   "counter"
+  ]
+ },
+ {
+  "query": "hexagon tile",
+  "alternatives": [
+   "hex tile"
+  ],
+  "filters": {
+   "source": "kaykit"
+  },
+  "expect": [
+   "hex"
+  ]
+ },
+ {
+  "query": "coffin",
+  "filters": {
+   "source": "kaykit"
+  },
+  "expect": [
+   "coffin"
+  ]
+ },
+ {
+  "query": "balloon",
+  "filters": {
+   "source": "polygonalmind"
+  },
+  "expect": [
+   "balloon"
+  ]
+ },
+ {
+  "query": "japanese sign",
+  "filters": {
+   "source": "polygonalmind"
+  },
+  "expect": [
+   "japanese"
+  ]
+ },
+ {
+  "query": "palm tree",
+  "filters": {
+   "source": "polygonalmind"
+  },
+  "expect": [
+   "palm"
+  ]
+ },
+ {
+  "query": "street lamp",
+  "alternatives": [
+   "lamp post"
+  ],
+  "filters": {
+   "source": "polygonalmind"
+  },
+  "expect": [
+   "lamp"
+  ]
  }
 ]

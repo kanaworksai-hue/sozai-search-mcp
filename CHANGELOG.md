@@ -3,6 +3,17 @@
 Release notes are written by hand for every tag. Data releases (`data-YYYY.MM.DD`) are listed
 with the code release that first expects them.
 
+## Unreleased
+
+- New libraries: KayKit (Kay Lousberg, 903 models in 10 packs) and Polygonal Mind (991 models in
+  18 packs, GLB versions by ToxSam), both CC0 and read from their GitHub repositories. `fetch_asset`
+  downloads them straight from GitHub (pinned to the commit Sozai Search measured) and packs one
+  `.glb`; KayKit packs are calibrated to metres where a pack has an object of known size.
+- `sozai ingest kaykit` / `sozai ingest polygonalmind` (maintainers): measure every model from its
+  glTF JSON without cloning (a Range request reads only a GLB's JSON chunk), render missing
+  previews, and fall back to `git` for file lists when the GitHub API rate limit is reached.
+- Models of one pack that differ only by a colour word fold into one result with variants.
+
 ## 0.1.0 (2026-11-08)
 
 First public release of Sozai Search MCP (package `sozai-search-mcp`, commands `sozai` and `sozai-search-mcp`,
