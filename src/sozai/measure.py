@@ -131,13 +131,13 @@ def parse_gltf(data: bytes, name: str = "model") -> tuple[dict, bytes | None]:
     return json.loads(data), None
 
 
-def _image_bytes(doc: dict, image: dict, binary: bytes | None, folder: Path) -> bytes | None:
+def _image_bytes(doc: dict, image: dict, binary: bytes | None, folder: Path | None) -> bytes | None:
     if "bufferView" in image and binary is not None:
         view = doc["bufferViews"][image["bufferView"]]
         start = view.get("byteOffset", 0)
         return binary[start:start + min(view["byteLength"], 4096)]
     uri = image.get("uri")
-    if uri and not uri.startswith("data:"):
+    if uri and folder is not None and not uri.startswith("data:"):
         file = folder / uri
         if file.is_file():
             with file.open("rb") as handle:
@@ -148,6 +148,12 @@ def _image_bytes(doc: dict, image: dict, binary: bytes | None, folder: Path) -> 
 def measure_gltf(path: Path) -> dict:
     path = Path(path)
     doc, binary = read_gltf(path)
+    return measure_doc(doc, binary, path.parent)
+
+
+def measure_doc(doc: dict, binary: bytes | None = None, folder: Path | None = None) -> dict:
+    """measure_gltf for a glTF JSON already in memory. Without the binary chunk or the folder the
+    textures sit in, max_texture_px is None; everything else comes from the JSON alone."""
     accessors, meshes, nodes = doc.get("accessors", []), doc.get("meshes", []), doc.get("nodes", [])
     box, triangles, vertices = Box(), 0, 0
 
@@ -175,7 +181,8 @@ def measure_gltf(path: Path) -> dict:
                 triangles += count // 3 if mode == 4 else max(count - 2, 0) if mode in (5, 6) else 0
         stack.extend((child, world) for child in node.get("children", []))
 
-    sizes = [s for s in (image_size(b) for b in (_image_bytes(doc, img, binary, path.parent) for img in doc.get("images", [])) if b) if s]
+    sizes = [s for s in (image_size(b) for b in (_image_bytes(doc, img, binary, folder)
+                                                  for img in doc.get("images", [])) if b) if s]
     animations = doc.get("animations", [])
     return {
         "size": box.size(),  # [x, y (up), z] in file units (metres for glTF)

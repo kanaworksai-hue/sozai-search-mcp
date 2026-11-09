@@ -94,7 +94,22 @@ QUATERNIUS: dict[str, tuple[str, str, float, str]] = {
     "universalbasecharacters": ("Superhero_Female_FullBody", "height", 1.75, "a person is 1.75 m tall (kit in metres)"),
     "zombieapocalypsekit": ("Characters_Matt", "height", 1.8, "Matt is 1.8 m tall"),
 }
-TABLES = {"kenney": KENNEY, "quaternius": QUATERNIUS}
+# KayKit: about 0.75 m per unit across the Bits packs (a door is 2.8 units, a table 1.0), checked
+# against a second object in each pack. City Builder is a miniature town (a sedan is 0.94 units).
+# Medieval Hexagon is a board game (a barrel is a fifth of a tree) and Space Base has no object of
+# a known size; both stay uncalibrated.
+KAYKIT: dict[str, tuple[str, str, float, str]] = {
+    "character-pack-adventures": ("Knight", "height", 1.8, "a knight is 1.8 m tall"),
+    "character-pack-skeletons": ("Skeleton_Warrior", "height", 1.8, "a skeleton warrior is 1.8 m tall"),
+    "city-builder-bits": ("car_sedan", "length", 4.5, "a sedan is 4.5 m long"),
+    "dungeon-remastered": ("chair", "height", 0.9, "a chair is 0.9 m tall"),
+    "furniture-bits": ("table_medium", "height", 0.75, "a table is 0.75 m tall"),
+    "halloween-bits": ("coffin", "length", 2.1, "a coffin is 2.1 m long"),
+    "prototype-bits": ("Door_A", "height", 2.1, "a door is 2.1 m tall"),
+    "restaurant-bits": ("door_A", "height", 2.1, "a door is 2.1 m tall"),
+}
+# Polygonal Mind packs come from Unity scenes and are in metres (a bench is 0.55-0.9 m tall).
+TABLES = {"kenney": KENNEY, "quaternius": QUATERNIUS, "kaykit": KAYKIT}
 
 
 def _measure(record: dict, how: str) -> float | None:

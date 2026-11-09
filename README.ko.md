@@ -5,7 +5,7 @@
 <p>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-6b4dff?style=flat-square"></a>
   <a href="https://modelcontextprotocol.io"><img alt="MCP server" src="https://img.shields.io/badge/MCP-server-19b8d6?style=flat-square"></a>
-  <img alt="36,000 free assets" src="https://img.shields.io/badge/assets-36k_free-2ea44f?style=flat-square">
+  <img alt="38,000 free assets" src="https://img.shields.io/badge/assets-38k_free-2ea44f?style=flat-square">
   <img alt="Python 3.10 to 3.14" src="https://img.shields.io/badge/python-3.10–3.14-3776ab?style=flat-square&logo=python&logoColor=white">
   <img alt="macOS, Windows, Linux" src="https://img.shields.io/badge/macOS_·_Windows_·_Linux-555?style=flat-square">
   <a href="https://github.com/kanaworksai-hue/sozai-search-mcp/actions/workflows/test.yml"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/kanaworksai-hue/sozai-search-mcp/test.yml?style=flat-square&label=tests"></a>
@@ -20,7 +20,7 @@
 
 </div>
 
-**Sozai Search MCP**는 Claude Code, Claude Desktop, Cursor를 비롯한 모든 [MCP](https://modelcontextprotocol.io) 클라이언트에 **무료 3D 에셋 36,000개**의 라이브러리를 제공합니다. Poly Haven과 ambientCG의 실사 모델, PBR 머티리얼, HDRI, Kenney와 Quaternius의 로우폴리 게임 모델, 그리고 Quixel Megascans 에셋 정보까지 담겨 있습니다. "높이 1 m 미만의 나무 상자"나 "이끼 낀 바위"를 요청하면 에이전트가 키워드나 의미로 검색하고, 미리보기를 확인한 뒤, 실제 크기(미터 단위) 그대로 파일을 프로젝트에 넣어 줍니다. (*Sozai*는 일본어 素材로, '소재'라는 뜻입니다.)
+**Sozai Search MCP**는 Claude Code, Claude Desktop, Cursor를 비롯한 모든 [MCP](https://modelcontextprotocol.io) 클라이언트에 **무료 3D 에셋 38,000개**의 라이브러리를 제공합니다. Poly Haven과 ambientCG의 실사 모델, PBR 머티리얼, HDRI, Kenney, Quaternius, KayKit, Polygonal Mind의 로우폴리 게임 모델, 그리고 Quixel Megascans 에셋 정보까지 담겨 있습니다. "높이 1 m 미만의 나무 상자"나 "이끼 낀 바위"를 요청하면 에이전트가 키워드나 의미로 검색하고, 미리보기를 확인한 뒤, 실제 크기(미터 단위) 그대로 파일을 프로젝트에 넣어 줍니다. (*Sozai*는 일본어 素材로, '소재'라는 뜻입니다.)
 
 Sozai Search는 인덱스입니다. 에셋 파일은 하나도 호스팅하지 않습니다. 모든 결과는 공식 출처를 가리키며, 파일은 여러분의 컴퓨터가 그곳에서 직접 내려받습니다.
 
@@ -141,6 +141,8 @@ claude mcp add sozai -s project -- uv run --directory /path/to/sozai-search-mcp 
 | [ambientCG](https://ambientcg.com) | 머티리얼, HDRI, 데칼, 모델 | CC0 | ambientCG에서 다운로드 |
 | [Kenney](https://kenney.nl) | 로우폴리 게임 키트 | CC0 | 직접 내려받은 키트 zip에서 가져옴([아래 참고](#-키트-라이브러리-kenney-quaternius)) |
 | [Quaternius](https://quaternius.com) | 로우폴리 모델, 다수가 리그와 애니메이션 포함 | CC0 | 직접 내려받은 키트 zip에서 가져옴 |
+| [KayKit](https://kaylousberg.com) | 로우폴리 게임 팩: 캐릭터, 던전, 가구, 레스토랑, 핼러윈 등 | CC0 | GitHub에서 다운로드 |
+| [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release) | 메타버스 월드의 로우폴리 소품과 배경(GLB 버전: [ToxSam](https://github.com/ToxSam/cc0-models-Polygonal-Mind)) | CC0 | GitHub에서 다운로드 |
 | [Quixel Megascans](https://www.fab.com/sellers/Quixel) | 실사 스캔 | Fab Standard License | Sozai Search로는 다운로드 불가: 결과에 Fab 링크 제공 |
 
 Megascans는 Fab에서 무료입니다. Epic 계정으로 라이브러리에 추가한 뒤 다운로드하세요. 프로젝트에 사용할 수는 있지만 파일을 재배포할 수는 없습니다. 에셋 페이지에 나오는 세 치수는 축 순서가 정해져 있지 않아서 `dims_m`(큰 값부터)으로 표시하고, 높이 필터에서는 제외합니다.
@@ -192,7 +194,7 @@ Sozai Search는 https로만 접속하며, 접속 대상은 위의 라이브러�
 <details>
 <summary><b>에셋을 상업용 게임이나 영상에 써도 되나요?</b></summary>
 
-Poly Haven, ambientCG, Kenney, Quaternius 에셋은 CC0입니다. 어떤 용도로든 무료이고 크레딧도 필요 없습니다(그래도 Sozai Search는 `CREDITS.md`를 작성하며, Poly Haven은 API를 통해 자사 에셋을 보여 줄 때 "Powered by Poly Haven"을 표기해 달라고 요청합니다). Megascans는 Fab Standard License를 따릅니다. 프로젝트에 사용할 수는 있지만 파일을 재배포해서는 안 됩니다. 모든 결과에 라이선스가 표시됩니다.
+Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind 에셋은 CC0입니다. 어떤 용도로든 무료이고 크레딧도 필요 없습니다(그래도 Sozai Search는 `CREDITS.md`를 작성하며, Poly Haven은 API를 통해 자사 에셋을 보여 줄 때 "Powered by Poly Haven"을 표기해 달라고 요청합니다). Megascans는 Fab Standard License를 따릅니다. 프로젝트에 사용할 수는 있지만 파일을 재배포해서는 안 됩니다. 모든 결과에 라이선스가 표시됩니다.
 </details>
 
 <details>
@@ -246,6 +248,7 @@ src/sozai/
   bundle.py        the published data zip (pack / install)
   fetch.py         downloads, packing .glb, credits
   catalog.py       kit ingest (Kenney, Quaternius); scale.py calibration, thumbs.py previews
+  repos.py         libraries on GitHub (KayKit, Polygonal Mind)
   sources/         Poly Haven, ambientCG, Megascans
 ```
 
@@ -256,9 +259,9 @@ src/sozai/
 - **이 프로젝트:** [MIT](LICENSE), © 東京AI映像合同会社 (Tokyo AI Visuals LLC).
 - **에셋:** 각 에셋은 고유한 라이선스를 따르며, 결과마다 표시됩니다. Sozai Search는 에셋 파일을 배포하지 않습니다. 공개 데이터에는 별도의 `NOTICE.txt`가 들어 있습니다.
 - **브랜드:** KanaWorks_AI라는 이름과 로고, 캐릭터 Kana는 東京AI映像合同会社의 소유이며 MIT 라이선스 적용 대상이 **아닙니다**. 자세한 내용은 [docs/brand](docs/brand/README.md)를 참고하세요.
-- **기반 기술:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2), [Model Context Protocol](https://modelcontextprotocol.io).
+- **기반 기술:** [Poly Haven](https://polyhaven.com) (Powered by Poly Haven), [ambientCG](https://ambientcg.com), [Kenney](https://kenney.nl), [Quaternius](https://quaternius.com), [KayKit](https://kaylousberg.com), [Polygonal Mind](https://github.com/PolygonalMind/initiative-opensource-release), [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2), [Model Context Protocol](https://modelcontextprotocol.io).
 
-이 프로젝트는 독립 프로젝트이며, Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, Google, Anthropic과 제휴하거나 보증을 받은 것이 아닙니다.
+이 프로젝트는 독립 프로젝트이며, Epic Games, Quixel, Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind, Google, Anthropic과 제휴하거나 보증을 받은 것이 아닙니다.
 
 <br>
 

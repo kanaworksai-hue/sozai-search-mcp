@@ -225,6 +225,35 @@ def _ambientcg(asset: dict, folder: Path, resolution: str, fmt: str, quality: st
 
 def _kit(asset: dict, folder: Path, resolution: str, fmt: str, quality: str) -> tuple[Path, list[Path], list[str]]:
     main, placed, notes = _kit_files(asset, folder, fmt)
+    _scale_to_metres(asset, main, notes)
+    return main, placed, notes
+
+
+def _repo(asset: dict, folder: Path, resolution: str, fmt: str, quality: str) -> tuple[Path, list[Path], list[str]]:
+    """KayKit, Polygonal Mind: the model's files from GitHub, at the commit the record was read at."""
+    from sozai.repos import materialise
+
+    stem = _safe_name(PurePosixPath(asset["source_id"]).name)
+    work = inside(folder, stem)
+    main = materialise(asset["downloads"], work)
+    if fmt == "glb" and main.suffix.lower() in (".gltf", ".glb"):
+        from sozai.gltf_pack import needs_packing, pack
+
+        out = inside(folder, f"{stem}.glb")
+        if needs_packing(main):
+            pack(main, out)
+        else:
+            shutil.copyfile(main, out)
+        shutil.rmtree(work)
+        main, placed = out, [out]
+    else:
+        placed = sorted(p for p in work.rglob("*") if p.is_file())
+    notes: list[str] = []
+    _scale_to_metres(asset, main, notes)
+    return main, placed, notes
+
+
+def _scale_to_metres(asset: dict, main: Path, notes: list[str]) -> None:
     # Kits not modelled in metres: write the calibration into the file, so the model arrives at
     # the size search reported (a 3.6-unit knight becomes 1.96 m).
     factor = ((asset.get("attributes") or {}).get("scale") or {}).get("factor")
@@ -238,7 +267,6 @@ def _kit(asset: dict, folder: Path, resolution: str, fmt: str, quality: str) -> 
             notes.append(f"not rescaled: multiply this {main.suffix} by {factor} for real size in metres")
     elif factor is None and (asset.get("attributes") or {}).get("size_units"):
         notes.append("this kit has no real-world scale reference; size it by eye")
-    return main, placed, notes
 
 
 def _kit_files(asset: dict, folder: Path, fmt: str) -> tuple[Path, list[Path], list[str]]:
@@ -278,7 +306,8 @@ def _kit_files(asset: dict, folder: Path, fmt: str) -> tuple[Path, list[Path], l
     return main, placed, []
 
 
-HANDLERS = {"polyhaven": _polyhaven, "ambientcg": _ambientcg, "kenney": _kit, "quaternius": _kit}
+HANDLERS = {"polyhaven": _polyhaven, "ambientcg": _ambientcg, "kenney": _kit, "quaternius": _kit,
+            "kaykit": _repo, "polygonalmind": _repo}
 
 
 def _publish(stage: Path, folder: Path) -> None:
