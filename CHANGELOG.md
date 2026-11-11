@@ -3,7 +3,11 @@
 Release notes are written by hand for every tag. Data releases (`data-YYYY.MM.DD`) are listed
 with the code release that first expects them.
 
-## Unreleased
+## 0.2.0 (2026-11-11)
+
+Expects published data [`data-2026.11.09`](https://github.com/kanaworksai-hue/sozai-search-mcp/releases/tag/data-2026.11.09)
+(38,943 records, up from 36,287); the first search after updating downloads it. No licence or
+breaking changes.
 
 - New libraries: KayKit (Kay Lousberg, 903 models in 10 packs) and Polygonal Mind (991 models in
   18 packs, GLB versions by ToxSam), both CC0 and read from their GitHub repositories. `fetch_asset`
@@ -28,6 +32,12 @@ with the code release that first expects them.
 - Results show the licence of every asset that is not CC0 (before: only of assets that may not be
   redistributed).
 - `view_assets` shrinks previews over 400 KB when Pillow is installed, and links them otherwise.
+- Downloads cut off before their stated length are retried (up to three times) instead of being
+  cached as broken files.
+- The READMEs open with "Install with your AI agent": steps an agent can follow from the
+  repository URL alone (uv, `uvx` registration for Claude Code, Codex and JSON clients, first
+  search, optional semantic search).
+- Maintainers: `sozai embed` reads preview images up to 64 MB, and Blender previews accept `.vrm`.
 
 ## 0.1.0 (2026-11-08)
 
