@@ -8,7 +8,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "東京AI映像合同会社" }]
 requires-python = ">=3.10"
 keywords = ["mcp", "model-context-protocol", "3d-assets", "cc0", "pbr", "hdri", "game-assets", "ai-agents",
-            "polyhaven", "ambientcg", "kenney", "quaternius", "megascans"]
+            "polyhaven", "ambientcg", "kenney", "quaternius", "kaykit", "vrm", "nasa", "megascans"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
