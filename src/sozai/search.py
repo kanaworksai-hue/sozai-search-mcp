@@ -76,8 +76,8 @@ def _filters(kind=None, style=None, source=None, min_size_m=None, max_size_m=Non
     if max_polycount is not None:
         clauses.append("a.polycount IS NOT NULL AND a.polycount <= ?")
         params.append(max_polycount)
-    if redistributable_only:
-        clauses.append("a.redistributable = 1")
+    if redistributable_only:  # CC0 only: NASA files may be shipped too, but come with NASA's own terms
+        clauses.append("a.redistributable = 1 AND a.licence = 'CC0-1.0'")
     return (" AND ".join(clauses) or "1"), params
 
 

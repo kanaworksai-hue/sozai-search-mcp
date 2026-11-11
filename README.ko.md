@@ -202,7 +202,7 @@ Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind, Open Source A
 <details>
 <summary><b>오픈소스 프로젝트에 파일을 포함해 배포해도 되나요?</b></summary>
 
-`redistributable_only=true`로 검색하세요. CC0 에셋만 남기고 Megascans는 제외합니다.
+`redistributable_only=true`로 검색하세요. CC0 에셋만 남기고 Megascans와 NASA 모델(NASA 자체 조건이 적용됨)은 제외합니다.
 </details>
 
 <details>

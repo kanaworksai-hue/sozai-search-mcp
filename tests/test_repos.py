@@ -307,6 +307,12 @@ def test_nasa_reads_pages_and_reports_no_size(monkeypatch, tmp_path):
     assert stardust["thumbnail_url"] is None  # rendered with Blender at ingest time
     line = how_to_get(aqua)
     assert "fetch_asset" in line and "endorsement" in line and "real object" in line
+    from sozai import index
+    from sozai.search import Searcher
+
+    index.build(list(rows.values()), tmp_path / "index.sqlite")
+    searcher = Searcher(index.connect(tmp_path / "index.sqlite"))
+    assert searcher.search("aqua")["results"] and not searcher.search("aqua", redistributable_only=True)["results"]
     assert repos._nasa_slug("Active Cavity Irradiance Monitor Satellite (AcrimSAT) (A)") == \
         "active-cavity-irradiance-monitor-satellite-acrimsat-a"
     assert repos._nasa_slug("70-meter Dish") == "70-meter-dish"
@@ -320,3 +326,25 @@ def test_nasa_reads_pages_and_reports_no_size(monkeypatch, tmp_path):
     monkeypatch.setattr(fetch, "download", download)
     out = fetch.fetch_asset(aqua, str(tmp_path / "project"))
     assert out["files"] == ["Aqua_A.glb"] and any("not scaled to metres" in note for note in out["notes"])
+
+
+def test_variants_need_a_similar_size_and_ids_stay_unique():
+    def rec(source, sid, size, title=None):
+        return {"id": f"{source}:{sid}", "source": source, "source_id": sid, "title": title or sid,
+                "size_x": size, "size_y": size, "size_z": size, "attributes": {}, "variant_group": None}
+
+    tower = [rec("polygonalmind", "transit/Tower_Station_01", 42.0), rec("polygonalmind", "transit/Tower_Station_Light", 0.4),
+             rec("polygonalmind", "transit/Bush01", 1.0), rec("polygonalmind", "transit/Bush02", 1.2)]
+    repos.group_variants(tower)
+    assert [r["variant_group"] for r in tower] == [None, None, "polygonalmind:transit/bush", "polygonalmind:transit/bush"]
+    nasa = [rec("nasa", "models/Aqua_A", 1, "Aqua (A)"), rec("nasa", "models/Aqua_B", 1, "Aqua (B)"),
+            rec("nasa", "models/ICESat_A", 1, "ICESat (A)"), rec("nasa", "models/ICESat_2_A", 1, "ICESat-2 (A)"),
+            rec("nasa", "models/Landsat_7", 1, "Landsat 7"), rec("nasa", "models/Landsat_8", 1, "Landsat 8")]
+    repos._nasa_variants(nasa)
+    repos.group_variants(nasa)  # numbers name different NASA objects: no generic folding on top
+    assert [r["variant_group"] for r in nasa] == ["nasa:models/Aqua", "nasa:models/Aqua", None, None, None, None]
+    twins = [rec("nasa", "models/Hammer", 1), rec("nasa", "models/Hammer", 1), rec("nasa", "models/Hammer_2", 1)]
+    logs = []
+    repos.unique_ids(twins, logs.append)
+    assert [r["id"] for r in twins] == ["nasa:models/Hammer", "nasa:models/Hammer_3", "nasa:models/Hammer_2"]
+    assert twins[1]["source_id"] == "models/Hammer_3" and logs

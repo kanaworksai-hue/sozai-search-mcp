@@ -202,7 +202,7 @@ Os assets do Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind e
 <details>
 <summary><b>Posso distribuir os arquivos em um projeto de código aberto?</b></summary>
 
-Busque com `redistributable_only=true`: isso mantém os assets CC0 e deixa os Megascans de fora.
+Busque com `redistributable_only=true`: isso mantém os assets CC0 e deixa de fora os Megascans e os modelos da NASA (que têm condições próprias da NASA).
 </details>
 
 <details>

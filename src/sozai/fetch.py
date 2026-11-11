@@ -89,6 +89,14 @@ class _CutOff(Exception):
     pass
 
 
+class TooLarge(ToolError):
+    """The file is over the size the caller accepts; nothing was cached."""
+
+
+def _mb(size: int) -> str:
+    return f"{size / 1_000_000:.3g} MB"
+
+
 def _download_once(url: str, target: Path, expected_md5: str | None, max_bytes: int) -> Path:
     tmp = target.with_name(f"{target.name}.{os.getpid()}.part")  # two sessions may fetch the same file
     md5 = hashlib.md5()
@@ -97,10 +105,12 @@ def _download_once(url: str, target: Path, expected_md5: str | None, max_bytes: 
         with open_url(url, timeout=60) as response, tmp.open("wb") as out:
             headers = getattr(response, "headers", None) or {}
             length, encoded = headers.get("Content-Length"), headers.get("Content-Encoding")
+            if length and length.isdigit() and int(length) > max_bytes:  # say so before reading it
+                raise TooLarge(f"{url} is larger than {_mb(max_bytes)} ({_mb(int(length))}); not downloaded")
             while chunk := response.read(1 << 20):
                 size += len(chunk)
                 if size > max_bytes:
-                    raise ToolError(f"{url} is larger than {max_bytes >> 20} MB; not downloaded")
+                    raise TooLarge(f"{url} is larger than {_mb(max_bytes)}; not downloaded")
                 md5.update(chunk)
                 out.write(chunk)
         # read(n) returns b"" when the connection drops early, without an error: never cache a cut file
