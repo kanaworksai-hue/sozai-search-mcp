@@ -3,6 +3,16 @@
 Release notes are written by hand for every tag. Data releases (`data-YYYY.MM.DD`) are listed
 with the code release that first expects them.
 
+## Unreleased
+
+- When semantic search is not set up, the first search of a session says so in its note: what
+  it would give, its size (about 600 MB once) and how to turn it on, for the agent to pass on
+  to the user. `SOZAI_SEMANTIC=0` turns the note off. Before, search fell back to keywords
+  silently, so agents never mentioned it.
+- The agent instructions say to pass that note on once and ask before setting semantic search up.
+- READMEs (six languages): the install steps tell the agent to ask the user before turning on
+  semantic search, with what it gives and its disk size; the data download is about 15 MB.
+
 ## 0.2.1 (2026-11-12)
 
 Fixes found by reviewing 0.2.0. Expects published data

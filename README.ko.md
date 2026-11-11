@@ -78,8 +78,8 @@ Sozai Search는 인덱스입니다. 에셋 파일은 하나도 호스팅하지 �
    ```
 
 3. **새 세션 시작:** MCP 서버는 세션이 시작될 때 불러옵니다. Claude Code는 처음에 프로젝트의 `.mcp.json`을 승인해 달라고 묻습니다. `claude mcp list` 또는 `codex mcp list`로 확인할 수 있습니다.
-4. **써 보기:** "wooden crate"로 검색합니다. 첫 검색에서 공개 데이터(약 13 MB)를 내려받고 몇 초 만에 인덱스를 만듭니다. `fetch_asset`에는 프로젝트 안의 폴더를 절대 경로로 지정합니다.
-5. **의미로 검색(선택):** 설명형 질의나 모든 언어의 질의를 쓰려면 질의용 모델(약 350 MB)을 한 번 내려받습니다.
+4. **써 보기:** "wooden crate"로 검색합니다. 첫 검색에서 공개 데이터(약 15 MB)를 내려받고 몇 초 만에 인덱스를 만듭니다. `fetch_asset`에는 프로젝트 안의 폴더를 절대 경로로 지정합니다.
+5. **의미로 검색(선택, 먼저 사용자에게 확인):** 설명형 질의와 모든 언어의 질의가 훨씬 정확해집니다(테스트에서 원하는 에셋이 1위로 나오는 비율이 31%에서 79%로 올랐습니다). 디스크를 한 번 약 600 MB 사용합니다(Python 패키지 약 250 MB, 질의용 모델 약 350 MB). 켤지 사용자에게 물어보고, 동의하면 질의용 모델을 내려받습니다.
 
    ```bash
    uvx --from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp" sozai semantic-setup

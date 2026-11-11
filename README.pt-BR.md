@@ -78,8 +78,8 @@ Passe a URL deste repositório para o Claude Code, o Codex ou outro agente e pe�
    ```
 
 3. **Abra uma nova sessão:** Os servidores MCP são carregados quando a sessão começa. Na primeira vez, o Claude Code pede para aprovar o `.mcp.json` do projeto. Confira com `claude mcp list` ou `codex mcp list`.
-4. **Teste:** busque "wooden crate". A primeira busca baixa os dados publicados (cerca de 13 MB) e monta o índice em poucos segundos. Passe para o `fetch_asset` uma pasta do projeto com caminho absoluto.
-5. **Busca por significado (opcional):** para buscas descritivas, em qualquer idioma, baixe o modelo de consulta uma vez (cerca de 350 MB):
+4. **Teste:** busque "wooden crate". A primeira busca baixa os dados publicados (cerca de 15 MB) e monta o índice em poucos segundos. Passe para o `fetch_asset` uma pasta do projeto com caminho absoluto.
+5. **Busca por significado (opcional, pergunte antes ao usuário):** deixa as buscas descritivas e as buscas em qualquer idioma muito melhores (nos nossos testes, o asset procurado aparece em primeiro 79% das vezes em vez de 31%). Ocupa cerca de 600 MB de disco uma única vez: cerca de 250 MB de pacotes Python e o modelo de consulta de cerca de 350 MB. Pergunte ao usuário se ele quer ativar; se ele aceitar, baixe o modelo de consulta:
 
    ```bash
    uvx --from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp" sozai semantic-setup

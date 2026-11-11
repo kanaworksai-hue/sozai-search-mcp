@@ -70,8 +70,15 @@ def test_status_says_what_is_missing(tmp_path, monkeypatch):
     assert "sozai-search-mcp[semantic]" in semantic.status()
 
 
-def test_server_stays_keyword_only_without_semantic(index_path):
+def test_server_says_once_when_semantic_search_is_off(index_path, monkeypatch):
     from sozai import server
 
-    result = server.search_assets("wooden crate")
-    assert result["results"][0]["id"].startswith("polyhaven:wooden_crate") and "Semantic" not in result.get("note", "")
+    monkeypatch.setattr(semantic, "deps_installed", lambda: False)
+    monkeypatch.setattr(server, "_semantic_hint_given", False)  # a new session
+    first = server.search_assets("wooden crate")
+    assert first["results"][0]["id"].startswith("polyhaven:wooden_crate")  # keyword search still works
+    assert "Semantic search is off" in first["note"] and "semantic-setup" in first["note"]
+    assert "Semantic" not in server.search_assets("wooden crate").get("note", "")  # once per session
+    monkeypatch.setattr(server, "_semantic_hint_given", False)
+    monkeypatch.setenv("SOZAI_SEMANTIC", "0")  # the user chose keyword search: no note at all
+    assert "Semantic" not in server.search_assets("wooden crate").get("note", "")
