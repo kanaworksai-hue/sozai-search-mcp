@@ -78,8 +78,8 @@ Sozai Search 只是一个索引，本身不托管任何素材文件：每条结�
    ```
 
 3. **开一个新会话：** MCP 服务器在会话开始时加载。Claude Code 第一次会请你批准项目的 `.mcp.json`。可以用 `claude mcp list` 或 `codex mcp list` 检查。
-4. **试一下：** 搜索 "wooden crate"。第一次搜索会下载公开数据（约 13 MB），几秒内建好索引。给 `fetch_asset` 传项目里某个文件夹的绝对路径。
-5. **按意思搜索（可选）：** 要支持描述性的、任何语言的查询，先下载一次查询模型（约 350 MB）：
+4. **试一下：** 搜索 "wooden crate"。第一次搜索会下载公开数据（约 15 MB），几秒内建好索引。给 `fetch_asset` 传项目里某个文件夹的绝对路径。
+5. **按意思搜索（可选，先问用户）：** 开启后，描述性的查询和任何语言的查询都会准确得多（我们的测试里，想要的素材排第一的比例从 31% 提高到 79%）。它一次性占用约 600 MB 磁盘：Python 库约 250 MB，查询模型约 350 MB。先问用户要不要开启；用户同意后，再下载查询模型：
 
    ```bash
    uvx --from "sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp" sozai semantic-setup

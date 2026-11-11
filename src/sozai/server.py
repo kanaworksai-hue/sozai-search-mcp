@@ -40,6 +40,8 @@ How to search well:
   dimensions in metres, largest first, without knowing which one is the height.
 - NASA models have no size in metres (their files share no unit): scale them against the real
   object. Credit NASA and do not imply NASA endorsement.
+- When a result's note says semantic search is off, pass that on to the user once and ask before
+  setting it up; keep searching with English keywords meanwhile.
 - Megascans cannot be fetched by Sozai Search: give the user the Fab link (free to claim with an Epic
   account, then download). Their files may be used in projects but not redistributed.
 
@@ -173,16 +175,38 @@ def search_assets(query: str = "", alternatives: list[str] | None = None, kind=N
     return result
 
 
+SEMANTIC_FROM = '"sozai-search-mcp[semantic] @ git+https://github.com/kanaworksai-hue/sozai-search-mcp"'
+_semantic_hint_given = False
+
+
+def semantic_hint() -> str:
+    from sozai import semantic
+
+    missing = ("its Python packages are not installed" if not semantic.deps_installed()
+               else "the query model is not downloaded" if not semantic.model_installed()
+               else "the asset vectors are missing; run `sozai build`")
+    return (f"Semantic search is off ({missing}), so this search used keywords only. Turned on, it makes "
+            "descriptive and non-English searches much better; it needs about 600 MB once (Python packages and "
+            "the query model). Tell the user once and set it up only if they agree: with uvx, run "
+            f"`uvx --from {SEMANTIC_FROM} sozai semantic-setup` and register the server with that --from; "
+            "from a clone, `uv sync --extra semantic`, then `uv run sozai semantic-setup`. "
+            "SOZAI_SEMANTIC=0 in the server's environment turns this note off.")
+
+
 def _semantic(query: str, alternatives: list[str] | None) -> tuple[dict | None, str | None]:
     """Ranked ids by meaning from the semantic worker, or (None, why not)."""
+    global _semantic_hint_given
     texts = [t for t in [query, *(alternatives or [])] if t and t.strip()]
     if not texts or os.environ.get("SOZAI_SEMANTIC") == "0":
         return None, None
     from sozai import semantic
 
     missing = semantic.status()
-    if missing:
-        return None, None  # keyword search only, silently: semantic search is optional
+    if missing:  # keyword search still works; say once per session what the user is missing
+        if _semantic_hint_given:
+            return None, None
+        _semantic_hint_given = True
+        return None, semantic_hint()
     try:
         return semantic.client().search(texts), None
     except Exception as error:
