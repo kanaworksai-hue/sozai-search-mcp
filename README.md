@@ -202,7 +202,7 @@ Poly Haven, ambientCG, Kenney, Quaternius, KayKit, Polygonal Mind and Open Sourc
 <details>
 <summary><b>Can I ship the files in an open-source project?</b></summary>
 
-Search with `redistributable_only=true`: it keeps CC0 assets and leaves out Megascans.
+Search with `redistributable_only=true`: it keeps CC0 assets and leaves out Megascans and NASA models (NASA's own terms apply).
 </details>
 
 <details>

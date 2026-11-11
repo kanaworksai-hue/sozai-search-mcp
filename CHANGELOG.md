@@ -3,6 +3,25 @@
 Release notes are written by hand for every tag. Data releases (`data-YYYY.MM.DD`) are listed
 with the code release that first expects them.
 
+## 0.2.1 (2026-11-12)
+
+Fixes found by reviewing 0.2.0. Expects published data
+[`data-2026.11.12`](https://github.com/kanaworksai-hue/sozai-search-mcp/releases/tag/data-2026.11.12)
+(the same assets as 2026.11.09, with fixed variant groups); the first search after updating
+downloads it. No licence or breaking changes.
+
+- `redistributable_only=true` keeps CC0 assets only, as documented. In 0.2.0 it also let NASA
+  models through, which come with NASA's own terms.
+- `view_assets` shows avatar previews over 2 MB when Pillow is installed (it downloads up to
+  32 MB to shrink them; 0.2.0 refused them as "larger than 1 MB"). Without Pillow it no longer
+  downloads previews it cannot show and gives their link straight away.
+- Variants fold only models of about the same size, so a 42 m tower and its 0.4 m lamp, or a
+  room and the small lights in it, are separate results again. NASA folds only the lettered
+  versions of one object (Aqua (A), (B), (C)); numbers mark different objects (ICESat and
+  ICESat-2, Landsat 7 and 8).
+- Maintainers: `sozai ingest` gives a numbered id to a model whose id is already taken, instead
+  of producing a catalog the index build would reject; KayKit's same-name check now works.
+
 ## 0.2.0 (2026-11-11)
 
 Expects published data [`data-2026.11.09`](https://github.com/kanaworksai-hue/sozai-search-mcp/releases/tag/data-2026.11.09)

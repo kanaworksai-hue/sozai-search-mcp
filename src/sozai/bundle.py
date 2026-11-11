@@ -22,7 +22,7 @@ from pathlib import Path
 
 from sozai import __version__, index, paths, semantic
 
-DATA_VERSION = "2026.11.09"
+DATA_VERSION = "2026.11.12"
 DATA_URL = f"https://github.com/kanaworksai-hue/sozai-search-mcp/releases/download/data-{DATA_VERSION}/sozai-data-{DATA_VERSION}.zip"
 RECORDS = "records.jsonl.gz"
 VECTORS = "vectors.npz"

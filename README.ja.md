@@ -202,7 +202,7 @@ Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind、Open So
 <details>
 <summary><b>オープンソースのプロジェクトにファイルを同梱できますか？</b></summary>
 
-`redistributable_only=true` で検索してください。CC0 の素材だけが残り、Megascans は除外されます。
+`redistributable_only=true` で検索してください。CC0 の素材だけが残り、Megascans と NASA のモデル（NASA 独自の条件があります）は除外されます。
 </details>
 
 <details>

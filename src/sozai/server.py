@@ -77,7 +77,7 @@ SEARCH_SCHEMA = {
         "animated": {"type": "boolean", "description": "true = only models that ship animation clips (get_asset lists them)."},
         "max_polycount": {"type": "integer", "exclusiveMinimum": 0, "description": "Polygon budget for models."},
         "redistributable_only": {"type": "boolean", "description": "true = only CC0 assets whose files may be shipped "
-                                 "(e.g. in an open-source game); leaves out Megascans."},
+                                 "(e.g. in an open-source game); leaves out Megascans and NASA models (their own terms)."},
         "limit": {"type": "integer", "minimum": 1, "maximum": 30, "description": "Results per page (default 10)."},
         "offset": {"type": "integer", "minimum": 0, "description": "Skip this many results (paging)."},
     },

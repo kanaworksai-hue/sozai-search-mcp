@@ -10,9 +10,11 @@ from urllib.parse import urlparse
 from urllib.request import url2pathname
 
 from sozai import paths
+from sozai.fetch import TooLarge
 from sozai.protocol import ToolContent, ToolError
 
 MAX_BYTES = 400_000
+MAX_SHRINKABLE = 32_000_000  # with Pillow: the largest preview worth downloading to shrink (avatar GIFs reach ~18 MB)
 FAB_LISTING = "https://www.fab.com/listings/"
 FAB_WIDTH = 640  # Fab resizes each listing image to 320, 640, 960... px wide; 640 is about 35 KB
 
@@ -55,7 +57,14 @@ def _shrink(data: bytes, side: int = 512) -> bytes | None:
         return None
 
 
+def _can_shrink() -> bool:
+    import importlib.util
+
+    return importlib.util.find_spec("PIL") is not None
+
+
 def thumbnail_bytes(url: str) -> bytes:
+    """A preview's bytes. Over MAX_BYTES only when Pillow can shrink it; else raises TooLarge."""
     parsed = urlparse(url)
     if parsed.scheme == "file":  # kit previews that `sozai ingest` wrote; nothing else on disk
         path = Path(url2pathname(parsed.path)).resolve()
@@ -66,7 +75,7 @@ def thumbnail_bytes(url: str) -> bytes:
         return path.read_bytes()
     from sozai.fetch import download
 
-    return download(_small_url(url), max_bytes=MAX_BYTES * 5).read_bytes()
+    return download(_small_url(url), max_bytes=MAX_SHRINKABLE if _can_shrink() else MAX_BYTES).read_bytes()
 
 
 def _fab_cache() -> Path:
@@ -134,6 +143,9 @@ def view(assets: list[dict]) -> ToolContent:
             continue
         try:
             data = thumbnail_bytes(url)
+        except TooLarge:
+            blocks.append({"type": "text", "text": f"{label} (preview too large to show here: {url})"})
+            continue
         except Exception as error:  # a missing preview should not hide the others
             blocks.append({"type": "text", "text": f"{label} (thumbnail unavailable: {error})"})
             continue

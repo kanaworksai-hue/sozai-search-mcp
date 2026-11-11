@@ -70,3 +70,41 @@ async def test_view_assets_over_stdio(kit_index, tmp_path):  # noqa: F811
             assert not result.is_error
             assert [c.type for c in result.content] == ["text", "image"]
             assert result.content[1].mime_type == "image/png"
+
+
+def test_previews_over_2_mb_are_downloaded_to_shrink_only_with_pillow(tmp_path, monkeypatch):
+    import io
+
+    from sozai import fetch
+
+    pytest.importorskip("PIL")
+    from PIL import Image
+
+    monkeypatch.setenv("SOZAI_HOME", str(tmp_path / "home"))
+    out = io.BytesIO()
+    Image.effect_noise((1100, 1100), 64).convert("RGB").save(out, "PNG")  # ~3 MB, like the big avatar previews
+    big = out.getvalue()
+    assert len(big) > 2_000_000
+
+    class Response(io.BytesIO):
+        headers = {"Content-Length": str(len(big))}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            self.close()
+
+    requests = []
+    monkeypatch.setattr(fetch, "open_url", lambda url, timeout: requests.append(url) or Response(big))
+    assets = [{"id": "opensourceavatars:r1/a", "title": "A", "thumbnail_url": "https://arweave.net/x"}]
+    monkeypatch.setattr(view, "_can_shrink", lambda: False)  # no Pillow: not downloaded, just linked
+    blocks = view.view(assets).blocks
+    assert len(blocks) == 1 and blocks[0]["text"].endswith("(preview too large to show here: https://arweave.net/x)")
+    assert not list((tmp_path / "home" / "cache").glob("**/*.*"))  # nothing cached
+    monkeypatch.setattr(view, "_can_shrink", lambda: True)
+    blocks = view.view(assets).blocks
+    assert [b["type"] for b in blocks] == ["text", "image"] and blocks[1]["mimeType"] == "image/webp"
+    assert len(base64.b64decode(blocks[1]["data"])) < view.MAX_BYTES
+    view.view(assets)
+    assert len(requests) == 2  # the shrunk-from file is cached: the second look downloads nothing

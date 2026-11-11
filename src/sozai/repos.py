@@ -255,7 +255,7 @@ def kaykit(http: Http, log: Callable[[str], None]) -> list[dict]:
         stems: dict[str, str] = {}
         for model in models:
             stem = _kaykit_stem(model)
-            if stem in stems:  # the same name in two folders: tell them apart by folder
+            if stem in stems.values():  # the same name in two folders: tell them apart by folder
                 stem = f"{PurePosixPath(model).parent.name}_{stem}"
             stems[model] = stem
 
@@ -538,8 +538,21 @@ def nasa(http: Http, log: Callable[[str], None]) -> list[dict]:
         return record
 
     records = _measure_all(jobs, work, log, "NASA")
+    _nasa_variants(records)
     log(f"sozai: NASA: {len(records)} models from {len(folders)} folders")
     return records
+
+
+def _nasa_variants(records: list[dict]) -> None:
+    """NASA marks other versions of one object with a letter: Aqua (A), Aqua (B). Only those fold
+    together; numbers name different objects (Landsat 7 and 8, ICESat and ICESat-2)."""
+    groups: dict[str, list[dict]] = {}
+    for record in records:
+        base = re.sub(r"\s*\([A-Z]\)", "", record["title"]).strip()
+        groups.setdefault(base, []).append(record)
+    for base, members in groups.items():
+        for record in members:
+            record["variant_group"] = f"nasa:models/{base}" if len(members) > 1 else None
 
 
 LIBRARIES: dict[str, Callable[[Http, Callable[[str], None]], list[dict]]] = {
@@ -548,22 +561,61 @@ LIBRARIES: dict[str, Callable[[Http, Callable[[str], None]], list[dict]]] = {
 
 # --- shared steps ---
 
+def unique_ids(records: list[dict], log: Callable[[str], None]) -> None:
+    """Give a numbered id to a record whose id another record already has (two folders holding the
+    same file name, names that differ only in punctuation): the index allows each id once."""
+    seen: set[str] = {r["id"] for r in records}
+    taken: set[str] = set()
+    for record in records:
+        if record["id"] in taken:
+            number = 2
+            while f"{record['id']}_{number}" in seen:
+                number += 1
+            old = record["id"]
+            record["id"] += f"_{number}"
+            record["source_id"] += f"_{number}"
+            seen.add(record["id"])
+            log(f"sozai: {old} appears twice; the second is {record['id']}")
+        taken.add(record["id"])
+
+
+SELF_GROUPED = {"nasa"}  # libraries whose own rule decides variants (see _nasa_variants)
+SIZE_SPREAD = 3.0  # variants of one model are about the same size; a 42 m tower is not a 0.4 m lamp
+
+
+def _largest(record: dict) -> float | None:
+    sizes = [record.get(k) for k in ("size_x", "size_y", "size_z")]
+    if not any(sizes):
+        sizes = (record.get("attributes") or {}).get("size_units") or []
+    return max((s for s in sizes if s), default=None)
+
+
+def _same_size(members: list[dict]) -> list[dict]:
+    """The members within SIZE_SPREAD of the group's median size (all of them when sizes are unknown)."""
+    known = sorted(s for s in map(_largest, members) if s)
+    if not known:
+        return members
+    median = known[len(known) // 2]
+    return [r for r in members if (s := _largest(r)) is None or median / SIZE_SPREAD <= s <= median * SIZE_SPREAD]
+
+
 def group_variants(records: list[dict]) -> None:
     """Models of one pack that differ only by a colour, a number or a letter (Bush01..Bush09,
-    chair_A / chair_B, building_blue / building_red) fold into one search result with variants."""
+    chair_A / chair_B, building_blue / building_red) fold into one search result with variants,
+    unless their sizes say they are different things (Tower Station 01 and Tower Station Light)."""
     groups: dict[str, list[dict]] = {}
     for record in records:
-        if record.get("variant_group"):  # grouped by its library already (an avatar and its voxel version)
-            continue
+        if record.get("variant_group") or record["source"] in SELF_GROUPED:
+            continue  # grouped by its library already (an avatar and its voxel version, NASA)
         pack, _, stem = record["source_id"].partition("/")
         words = [w.lower() for w in name_words(stem)]
         words = [w for w in words if w not in COLOURS and not w.isdigit() and len(w) > 1]
         if words:
             groups.setdefault(f"{record['source']}:{pack}/{' '.join(words)}", []).append(record)
     for key, members in groups.items():
-        if len(members) > 1:
-            for record in members:
-                record["variant_group"] = key
+        kept = _same_size(members) if len(members) > 1 else []
+        for record in kept if len(kept) > 1 else []:
+            record["variant_group"] = key
 
 
 def materialise(downloads: dict, root: Path) -> Path:
@@ -638,6 +690,7 @@ def ingest(source: str, log: Callable[[str], None] = print, thumbnails: bool = T
     records = LIBRARIES[source](Http(pause=0.05), log)
     if not records:
         raise RuntimeError(f"{source}: no models found")
+    unique_ids(records, log)
     scale = calibrate(records, source)
     group_variants(records)
     out_dir = paths.data_dir() / "catalog"

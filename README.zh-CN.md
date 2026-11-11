@@ -202,7 +202,7 @@ Poly Haven、ambientCG、Kenney、Quaternius、KayKit、Polygonal Mind 和 Open 
 <details>
 <summary><b>可以把文件放进开源项目一起发布吗？</b></summary>
 
-搜索时加上 `redistributable_only=true`：只保留 CC0 素材，排除 Megascans。
+搜索时加上 `redistributable_only=true`：只保留 CC0 素材，排除 Megascans 和 NASA 的模型（NASA 有自己的使用条件）。
 </details>
 
 <details>
