@@ -3,7 +3,9 @@
 Release notes are written by hand for every tag. Data releases (`data-YYYY.MM.DD`) are listed
 with the code release that first expects them.
 
-## Unreleased
+## 0.2.2 (2026-11-12)
+
+Expects the same published data as 0.2.1 (`data-2026.11.12`). No licence or breaking changes.
 
 - When semantic search is not set up, the first search of a session says so in its note: what
   it would give, its size (about 600 MB once) and how to turn it on, for the agent to pass on
